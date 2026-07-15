@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexum Incorporações — Identidade Visual</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:  #1C3A5E;
+    --red:   #C8102E;
+    --gray:  #6B6B6B;
+    --bg:    #E4E4E4;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 56px;
+    padding: 80px 40px;
+    font-family: 'Barlow', sans-serif;
+  }
+
+  /* ── version label ── */
+  .version-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #999;
+    font-weight: 400;
+    margin-bottom: 14px;
+    text-align: center;
+  }
+
+  .logo-wrapper { display: flex; flex-direction: column; align-items: center; }
+
+  /* ── logo card ── */
+  .logo-card {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    padding: 52px 76px;
+  }
+
+  .logo-card--light {
+    background: #FFFFFF;
+    box-shadow: 0 6px 48px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.05);
+  }
+
+  .logo-card--dark {
+    background: var(--navy);
+    box-shadow: 0 6px 48px rgba(0,0,0,0.28);
+  }
+
+  /* ── text block ── */
+  .text-block {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .brand-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 60px;
+    letter-spacing: 7px;
+    line-height: 1;
+    color: var(--navy);
+  }
+
+  .brand-name--onDark { color: #FFFFFF; }
+
+  .sep {
+    height: 2px;
+    width: 100%;
+    background: var(--red);
+    margin: 10px 0 9px;
+  }
+
+  .tagline {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 300;
+    font-size: 13px;
+    letter-spacing: 5.5px;
+    text-transform: uppercase;
+    color: var(--gray);
+  }
+
+  .tagline--onDark { color: rgba(255,255,255,0.50); }
+
+  /* ── icon-only row ── */
+  .icon-row {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+  }
+
+  .icon-pill {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 120px;
+    height: 120px;
+    border-radius: 2px;
+  }
+
+  .icon-pill--light { background: #FFFFFF; box-shadow: 0 4px 24px rgba(0,0,0,0.10); }
+  .icon-pill--dark  { background: var(--navy); box-shadow: 0 4px 24px rgba(0,0,0,0.22); }
+  .icon-pill--red   { background: var(--red);  box-shadow: 0 4px 24px rgba(200,16,46,0.30); }
+</style>
+</head>
+<body>
+
+<!-- ───────── VERSION 1: Light ───────── -->
+<div class="logo-wrapper">
+  <p class="version-label">Versão Principal — Fundo Claro</p>
+  <div class="logo-card logo-card--light">
+
+    <!-- INC mark -->
+    <svg width="96" height="76" viewBox="0 0 116 92" xmlns="http://www.w3.org/2000/svg">
+      <rect width="116" height="92" fill="#1C3A5E" rx="8"/>
+      <text x="58" y="65" text-anchor="middle"
+            font-family="'Barlow Condensed',sans-serif"
+            font-weight="800" font-size="62" fill="white" letter-spacing="5">INC</text>
+      <rect x="18" y="80" width="80" height="4" rx="2" fill="#C8102E"/>
+    </svg>
+
+    <div class="text-block">
+      <span class="brand-name">NEXUM</span>
+      <div class="sep"></div>
+      <span class="tagline">Incorporações</span>
+    </div>
+  </div>
+</div>
+
+<!-- ───────── VERSION 2: Dark ───────── -->
+<div class="logo-wrapper">
+  <p class="version-label">Versão Alternativa — Fundo Escuro</p>
+  <div class="logo-card logo-card--dark">
+
+    <svg width="96" height="76" viewBox="0 0 116 92" xmlns="http://www.w3.org/2000/svg">
+      <rect width="116" height="92" fill="rgba(255,255,255,0.12)" rx="8" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+      <text x="58" y="65" text-anchor="middle"
+            font-family="'Barlow Condensed',sans-serif"
+            font-weight="800" font-size="62" fill="white" letter-spacing="5">INC</text>
+      <rect x="18" y="80" width="80" height="4" rx="2" fill="#C8102E"/>
+    </svg>
+
+    <div class="text-block">
+      <span class="brand-name brand-name--onDark">NEXUM</span>
+      <div class="sep"></div>
+      <span class="tagline tagline--onDark">Incorporações</span>
+    </div>
+  </div>
+</div>
+
+<!-- ───────── VERSION 3: Icon only ───────── -->
+<div class="logo-wrapper">
+  <p class="version-label">Ícone Isolado — Variações de Fundo</p>
+  <div class="icon-row">
+
+    <!-- On white -->
+    <div class="icon-pill icon-pill--light">
+      <svg width="76" height="58" viewBox="0 0 116 92" xmlns="http://www.w3.org/2000/svg">
+        <rect width="116" height="92" fill="#1C3A5E" rx="8"/>
+        <text x="58" y="65" text-anchor="middle" font-family="'Barlow Condensed',sans-serif" font-weight="800" font-size="62" fill="white" letter-spacing="5">INC</text>
+        <rect x="18" y="80" width="80" height="4" rx="2" fill="#C8102E"/>
+      </svg>
+    </div>
+
+    <!-- On navy -->
+    <div class="icon-pill icon-pill--dark">
+      <svg width="76" height="58" viewBox="0 0 116 92" xmlns="http://www.w3.org/2000/svg">
+        <rect width="116" height="92" fill="rgba(255,255,255,0.1)" rx="8" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+        <text x="58" y="65" text-anchor="middle" font-family="'Barlow Condensed',sans-serif" font-weight="800" font-size="62" fill="white" letter-spacing="5">INC</text>
+        <rect x="18" y="80" width="80" height="4" rx="2" fill="#C8102E"/>
+      </svg>
+    </div>
+
+    <!-- On red -->
+    <div class="icon-pill icon-pill--red">
+      <svg width="76" height="58" viewBox="0 0 116 92" xmlns="http://www.w3.org/2000/svg">
+        <rect width="116" height="92" fill="rgba(255,255,255,0.15)" rx="8"/>
+        <text x="58" y="65" text-anchor="middle" font-family="'Barlow Condensed',sans-serif" font-weight="800" font-size="62" fill="white" letter-spacing="5">INC</text>
+        <rect x="18" y="80" width="80" height="4" rx="2" fill="rgba(255,255,255,0.6)"/>
+      </svg>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

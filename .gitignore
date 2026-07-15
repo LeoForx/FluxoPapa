@@ -1,0 +1,14 @@
+# MacOS
+.DS_Store
+
+# Backups
+*.backup
+*.bak
+
+# Claude/Agent files
+.agents/
+.claude/
+
+# Temporary files
+*.tmp
+*.lock

@@ -1,0 +1,1691 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fluxo de Caixa Mensal — Loteamento Papagaios</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', Arial, sans-serif;
+    background: #f5f7fa;
+    color: #1a1a2e;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .container {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  .header {
+    background: linear-gradient(135deg, #117A65 0%, #1ABC9C 100%);
+    color: white;
+    padding: 30px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  }
+
+  .header h1 {
+    font-size: 28px;
+    font-weight: 800;
+    margin-bottom: 8px;
+  }
+
+  .header p {
+    opacity: 0.9;
+    font-size: 14px;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #e0e0e0;
+    flex-wrap: wrap;
+  }
+
+  .tab {
+    padding: 12px 20px;
+    background: white;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 12px;
+    color: #555;
+    border-radius: 8px 8px 0 0;
+    transition: all 0.3s;
+    border: 2px solid transparent;
+    border-bottom: none;
+  }
+
+  .tab:hover {
+    background: #eafaf1;
+    color: #117A65;
+  }
+
+  .tab.active {
+    background: white;
+    color: #117A65;
+    border-color: #e0e0e0;
+    border-bottom: 2px solid white;
+    margin-bottom: -2px;
+    font-weight: 700;
+  }
+
+  .tab-content {
+    display: none;
+    background: white;
+    padding: 30px;
+    border-radius: 0 12px 12px 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+
+  .tab-content.active {
+    display: block;
+    animation: fadeIn 0.3s;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: #117A65;
+    border-left: 4px solid #1ABC9C;
+    padding-left: 12px;
+    margin: 25px 0 15px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .legend {
+    background: #FFF2CC;
+    border: 1px solid #F9E79F;
+    padding: 10px 14px;
+    border-radius: 6px;
+    margin-bottom: 16px;
+    font-size: 11px;
+    color: #7D6608;
+  }
+
+  .table-container {
+    overflow-x: auto;
+    margin: 15px 0;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+  }
+
+  th {
+    background: #117A65;
+    color: white;
+    padding: 10px 8px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 10px;
+    letter-spacing: 0.3px;
+    border: 1px solid #0f6656;
+    white-space: nowrap;
+  }
+
+  th.right, td.right { text-align: right; }
+  th.center, td.center { text-align: center; }
+
+  td {
+    padding: 8px;
+    border: 1px solid #e8ecf0;
+    background: white;
+  }
+
+  tr:nth-child(even) td {
+    background: #f9fafb;
+  }
+
+  tr.total td {
+    background: #D5E8D4;
+    font-weight: 700;
+    color: #117A65;
+  }
+
+  tr.negativo td {
+    background: #FDEDEC;
+    font-weight: 700;
+    color: #C0392B;
+  }
+
+  tr.positivo td {
+    background: #D5F5E3;
+    font-weight: 700;
+    color: #196F3D;
+  }
+
+  input[type="number"], input[type="text"] {
+    width: 100%;
+    padding: 6px 8px;
+    border: 2px solid #e0e0e0;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.3s;
+  }
+
+  /* Remover setas dos inputs numéricos */
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+
+  input[type="number"]:focus, input[type="text"]:focus {
+    outline: none;
+    border-color: #1ABC9C;
+    background: #eafaf1;
+  }
+
+  .input-editavel {
+    background: #FFF2CC;
+    font-weight: 700;
+  }
+
+  .input-calculado {
+    background: #D6E4F0;
+    color: #1F4E79;
+    font-weight: 700;
+    cursor: not-allowed;
+  }
+
+  .input-mes {
+    width: 70px;
+    text-align: right;
+  }
+
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+    margin: 16px 0;
+  }
+
+  .kpi-card {
+    background: linear-gradient(135deg, #eafaf1 0%, #d5f5e3 100%);
+    border: 2px solid #a9dfbf;
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+  }
+
+  .kpi-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #555;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .kpi-value {
+    font-size: 20px;
+    font-weight: 800;
+    color: #117A65;
+    line-height: 1.2;
+  }
+
+  .kpi-value.verde { color: #196F3D; }
+  .kpi-value.vermelho { color: #C0392B; }
+
+  .kpi-sub {
+    font-size: 10px;
+    color: #777;
+    margin-top: 4px;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #117A65, #1ABC9C);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 12px rgba(17,122,101,0.3);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(17,122,101,0.4);
+  }
+
+  .btn-secondary {
+    background: white;
+    color: #117A65;
+    border: 2px solid #1ABC9C;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-left: 8px;
+  }
+
+  .btn-secondary:hover {
+    background: #eafaf1;
+  }
+
+  .actions {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    gap: 8px;
+    z-index: 1000;
+  }
+
+  .chart-container {
+    margin: 20px 0;
+    padding: 20px;
+    background: #f9fafb;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+  }
+
+  @media print {
+    .actions, .tabs { display: none; }
+    .tab-content { display: block !important; page-break-after: always; }
+    body { background: white; }
+  }
+
+  @media (max-width: 768px) {
+    .container { padding: 10px; }
+    .header { padding: 20px; }
+    .header h1 { font-size: 20px; }
+    .kpi-grid { grid-template-columns: 1fr; }
+    .actions { bottom: 10px; right: 10px; flex-direction: column; }
+    table { font-size: 9px; }
+    th, td { padding: 5px; }
+  }
+
+  .mes-nome {
+    font-weight: 600;
+    color: #117A65;
+  }
+
+  .valor-positivo {
+    color: #196F3D;
+    font-weight: 700;
+  }
+
+  .valor-negativo {
+    color: #C0392B;
+    font-weight: 700;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <h1>💰 Fluxo de Caixa Mensal — Loteamento Papagaios</h1>
+    <p>Simulação de 96 meses (8 anos) com recálculo automático • Altere os parâmetros e veja o impacto em tempo real</p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('resumo', this)">📊 Resumo Anual</button>
+    <button class="tab" onclick="showTab('parametros', this)">⚙️ Parâmetros</button>
+    <button class="tab" onclick="showTab('cronograma', this)">📅 Cronograma (96 meses)</button>
+    <button class="tab" onclick="showTab('ano1', this)">📆 Ano 1</button>
+    <button class="tab" onclick="showTab('ano2', this)">📆 Ano 2</button>
+    <button class="tab" onclick="showTab('ano3', this)">📆 Ano 3</button>
+    <button class="tab" onclick="showTab('ano4', this)">📆 Ano 4</button>
+    <button class="tab" onclick="showTab('ano5', this)">📆 Ano 5</button>
+    <button class="tab" onclick="showTab('ano6', this)">📆 Ano 6</button>
+    <button class="tab" onclick="showTab('ano7', this)">📆 Ano 7</button>
+    <button class="tab" onclick="showTab('ano8', this)">📆 Ano 8</button>
+  </div>
+
+  <!-- ═══════════════════ RESUMO ANUAL ═══════════════════ -->
+  <div id="resumo" class="tab-content active">
+
+    <div class="section-title">Resumo dos 8 Anos — Visão Consolidada</div>
+
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Lotes Vendidos (Total)</div>
+        <div class="kpi-value" id="res_lotes_total">0</div>
+        <div class="kpi-sub">96 meses</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Receita Total</div>
+        <div class="kpi-value verde" id="res_receita_total">R$ 0</div>
+        <div class="kpi-sub">À vista + parcelas</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Custos Totais</div>
+        <div class="kpi-value" id="res_custos_total">R$ 0</div>
+        <div class="kpi-sub">Infraestrutura + operacional</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Fluxo Líquido Total</div>
+        <div class="kpi-value verde" id="res_fluxo_liquido">R$ 0</div>
+        <div class="kpi-sub">Empreendedor</div>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table>
+        <tr>
+          <th style="width:20%">Indicador</th>
+          <th class="right">Ano 1</th>
+          <th class="right">Ano 2</th>
+          <th class="right">Ano 3</th>
+          <th class="right">Ano 4</th>
+          <th class="right">Ano 5</th>
+          <th class="right">Ano 6</th>
+          <th class="right">Ano 7</th>
+          <th class="right">Ano 8</th>
+          <th class="right">Total 8 Anos</th>
+        </tr>
+        <tr>
+          <td>Lotes vendidos</td>
+          <td class="right" id="res_ano1_lotes">0</td>
+          <td class="right" id="res_ano2_lotes">0</td>
+          <td class="right" id="res_ano3_lotes">0</td>
+          <td class="right" id="res_ano4_lotes">0</td>
+          <td class="right" id="res_ano5_lotes">0</td>
+          <td class="right" id="res_ano6_lotes">0</td>
+          <td class="right" id="res_ano7_lotes">0</td>
+          <td class="right" id="res_ano8_lotes">0</td>
+          <td class="right" id="res_total_lotes">0</td>
+        </tr>
+        <tr>
+          <td>Receita à vista</td>
+          <td class="right" id="res_ano1_vista">R$ 0</td>
+          <td class="right" id="res_ano2_vista">R$ 0</td>
+          <td class="right" id="res_ano3_vista">R$ 0</td>
+          <td class="right" id="res_ano4_vista">R$ 0</td>
+          <td class="right" id="res_ano5_vista">R$ 0</td>
+          <td class="right" id="res_ano6_vista">R$ 0</td>
+          <td class="right" id="res_ano7_vista">R$ 0</td>
+          <td class="right" id="res_ano8_vista">R$ 0</td>
+          <td class="right" id="res_total_vista">R$ 0</td>
+        </tr>
+        <tr>
+          <td>Parcelas recebidas</td>
+          <td class="right" id="res_ano1_parc">R$ 0</td>
+          <td class="right" id="res_ano2_parc">R$ 0</td>
+          <td class="right" id="res_ano3_parc">R$ 0</td>
+          <td class="right" id="res_ano4_parc">R$ 0</td>
+          <td class="right" id="res_ano5_parc">R$ 0</td>
+          <td class="right" id="res_ano6_parc">R$ 0</td>
+          <td class="right" id="res_ano7_parc">R$ 0</td>
+          <td class="right" id="res_ano8_parc">R$ 0</td>
+          <td class="right" id="res_total_parc">R$ 0</td>
+        </tr>
+        <tr class="positivo">
+          <td><strong>TOTAL RECEITA</strong></td>
+          <td class="right" id="res_ano1_rec">R$ 0</td>
+          <td class="right" id="res_ano2_rec">R$ 0</td>
+          <td class="right" id="res_ano3_rec">R$ 0</td>
+          <td class="right" id="res_ano4_rec">R$ 0</td>
+          <td class="right" id="res_ano5_rec">R$ 0</td>
+          <td class="right" id="res_ano6_rec">R$ 0</td>
+          <td class="right" id="res_ano7_rec">R$ 0</td>
+          <td class="right" id="res_ano8_rec">R$ 0</td>
+          <td class="right" id="res_total_rec">R$ 0</td>
+        </tr>
+        <tr>
+          <td>(-) Infraestrutura</td>
+          <td class="right" id="res_ano1_infra">R$ 0</td>
+          <td class="right" id="res_ano2_infra">R$ 0</td>
+          <td class="right" id="res_ano3_infra">R$ 0</td>
+          <td class="right" id="res_ano4_infra">R$ 0</td>
+          <td class="right" id="res_ano5_infra">R$ 0</td>
+          <td class="right" id="res_ano6_infra">R$ 0</td>
+          <td class="right" id="res_ano7_infra">R$ 0</td>
+          <td class="right" id="res_ano8_infra">R$ 0</td>
+          <td class="right" id="res_total_infra">R$ 0</td>
+        </tr>
+        <tr>
+          <td>(-) Corretagem</td>
+          <td class="right" id="res_ano1_corret">R$ 0</td>
+          <td class="right" id="res_ano2_corret">R$ 0</td>
+          <td class="right" id="res_ano3_corret">R$ 0</td>
+          <td class="right" id="res_ano4_corret">R$ 0</td>
+          <td class="right" id="res_ano5_corret">R$ 0</td>
+          <td class="right" id="res_ano6_corret">R$ 0</td>
+          <td class="right" id="res_ano7_corret">R$ 0</td>
+          <td class="right" id="res_ano8_corret">R$ 0</td>
+          <td class="right" id="res_total_corret">R$ 0</td>
+        </tr>
+        <tr>
+          <td>(-) Admin & Marketing</td>
+          <td class="right" id="res_ano1_admin">R$ 0</td>
+          <td class="right" id="res_ano2_admin">R$ 0</td>
+          <td class="right" id="res_ano3_admin">R$ 0</td>
+          <td class="right" id="res_ano4_admin">R$ 0</td>
+          <td class="right" id="res_ano5_admin">R$ 0</td>
+          <td class="right" id="res_ano6_admin">R$ 0</td>
+          <td class="right" id="res_ano7_admin">R$ 0</td>
+          <td class="right" id="res_ano8_admin">R$ 0</td>
+          <td class="right" id="res_total_admin">R$ 0</td>
+        </tr>
+        <tr>
+          <td>(-) Contingência</td>
+          <td class="right" id="res_ano1_cont">R$ 0</td>
+          <td class="right" id="res_ano2_cont">R$ 0</td>
+          <td class="right" id="res_ano3_cont">R$ 0</td>
+          <td class="right" id="res_ano4_cont">R$ 0</td>
+          <td class="right" id="res_ano5_cont">R$ 0</td>
+          <td class="right" id="res_ano6_cont">R$ 0</td>
+          <td class="right" id="res_ano7_cont">R$ 0</td>
+          <td class="right" id="res_ano8_cont">R$ 0</td>
+          <td class="right" id="res_total_cont">R$ 0</td>
+        </tr>
+        <tr class="negativo">
+          <td><strong>TOTAL CUSTOS</strong></td>
+          <td class="right" id="res_ano1_custos">R$ 0</td>
+          <td class="right" id="res_ano2_custos">R$ 0</td>
+          <td class="right" id="res_ano3_custos">R$ 0</td>
+          <td class="right" id="res_ano4_custos">R$ 0</td>
+          <td class="right" id="res_ano5_custos">R$ 0</td>
+          <td class="right" id="res_ano6_custos">R$ 0</td>
+          <td class="right" id="res_ano7_custos">R$ 0</td>
+          <td class="right" id="res_ano8_custos">R$ 0</td>
+          <td class="right" id="res_total_custos">R$ 0</td>
+        </tr>
+        <tr class="total">
+          <td><strong>Resultado Bruto</strong></td>
+          <td class="right" id="res_ano1_bruto">R$ 0</td>
+          <td class="right" id="res_ano2_bruto">R$ 0</td>
+          <td class="right" id="res_ano3_bruto">R$ 0</td>
+          <td class="right" id="res_ano4_bruto">R$ 0</td>
+          <td class="right" id="res_ano5_bruto">R$ 0</td>
+          <td class="right" id="res_ano6_bruto">R$ 0</td>
+          <td class="right" id="res_ano7_bruto">R$ 0</td>
+          <td class="right" id="res_ano8_bruto">R$ 0</td>
+          <td class="right" id="res_total_bruto">R$ 0</td>
+        </tr>
+        <tr>
+          <td>(-) Pagto. Terrenista</td>
+          <td class="right" id="res_ano1_terr">R$ 0</td>
+          <td class="right" id="res_ano2_terr">R$ 0</td>
+          <td class="right" id="res_ano3_terr">R$ 0</td>
+          <td class="right" id="res_ano4_terr">R$ 0</td>
+          <td class="right" id="res_ano5_terr">R$ 0</td>
+          <td class="right" id="res_ano6_terr">R$ 0</td>
+          <td class="right" id="res_ano7_terr">R$ 0</td>
+          <td class="right" id="res_ano8_terr">R$ 0</td>
+          <td class="right" id="res_total_terr">R$ 0</td>
+        </tr>
+        <tr>
+          <td>(-) Impostos</td>
+          <td class="right" id="res_ano1_imp">R$ 0</td>
+          <td class="right" id="res_ano2_imp">R$ 0</td>
+          <td class="right" id="res_ano3_imp">R$ 0</td>
+          <td class="right" id="res_ano4_imp">R$ 0</td>
+          <td class="right" id="res_ano5_imp">R$ 0</td>
+          <td class="right" id="res_ano6_imp">R$ 0</td>
+          <td class="right" id="res_ano7_imp">R$ 0</td>
+          <td class="right" id="res_ano8_imp">R$ 0</td>
+          <td class="right" id="res_total_imp">R$ 0</td>
+        </tr>
+        <tr>
+          <td>(-) Custo Financeiro</td>
+          <td class="right" id="res_ano1_cfin">R$ 0</td>
+          <td class="right" id="res_ano2_cfin">R$ 0</td>
+          <td class="right" id="res_ano3_cfin">R$ 0</td>
+          <td class="right" id="res_ano4_cfin">R$ 0</td>
+          <td class="right" id="res_ano5_cfin">R$ 0</td>
+          <td class="right" id="res_ano6_cfin">R$ 0</td>
+          <td class="right" id="res_ano7_cfin">R$ 0</td>
+          <td class="right" id="res_ano8_cfin">R$ 0</td>
+          <td class="right" id="res_total_cfin">R$ 0</td>
+        </tr>
+        <tr class="positivo">
+          <td><strong>FLUXO LÍQUIDO EMPREENDEDOR</strong></td>
+          <td class="right" id="res_ano1_liq">R$ 0</td>
+          <td class="right" id="res_ano2_liq">R$ 0</td>
+          <td class="right" id="res_ano3_liq">R$ 0</td>
+          <td class="right" id="res_ano4_liq">R$ 0</td>
+          <td class="right" id="res_ano5_liq">R$ 0</td>
+          <td class="right" id="res_ano6_liq">R$ 0</td>
+          <td class="right" id="res_ano7_liq">R$ 0</td>
+          <td class="right" id="res_ano8_liq">R$ 0</td>
+          <td class="right" id="res_total_liq">R$ 0</td>
+        </tr>
+        <tr style="background:#D6E4F0; font-weight:700;">
+          <td><strong>SALDO ACUMULADO (final do ano)</strong></td>
+          <td class="right" id="res_ano1_acum">R$ 0</td>
+          <td class="right" id="res_ano2_acum">R$ 0</td>
+          <td class="right" id="res_ano3_acum">R$ 0</td>
+          <td class="right" id="res_ano4_acum">R$ 0</td>
+          <td class="right" id="res_ano5_acum">R$ 0</td>
+          <td class="right" id="res_ano6_acum">R$ 0</td>
+          <td class="right" id="res_ano7_acum">R$ 0</td>
+          <td class="right" id="res_ano8_acum">R$ 0</td>
+          <td class="right" id="res_total_acum">R$ 0</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="chart-container">
+      <canvas id="chartFluxo" width="800" height="300"></canvas>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════ PARÂMETROS ═══════════════════ -->
+  <div id="parametros" class="tab-content">
+
+    <div class="legend">
+      🟡 <strong>Células amarelas</strong> = editáveis | 🔵 <strong>Células azuis</strong> = calculadas
+    </div>
+
+    <div class="section-title">Comercial</div>
+    <div class="table-container">
+      <table>
+        <tr>
+          <th style="width:40%">Parâmetro</th>
+          <th style="width:20%">Valor</th>
+          <th style="width:15%">Unidade</th>
+          <th style="width:25%">Observação</th>
+        </tr>
+        <tr>
+          <td>Preço de venda por lote (R$)</td>
+          <td><input type="text" id="fc_preco" class="input-editavel" value="80000" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularFluxo()"></td>
+          <td>R$</td>
+          <td>Entrada</td>
+        </tr>
+        <tr>
+          <td>Total de lotes</td>
+          <td><input type="text" id="fc_lotes" class="input-editavel" value="300" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularFluxo()"></td>
+          <td>un.</td>
+          <td>Aprovado</td>
+        </tr>
+        <tr>
+          <td>VGV Total (R$)</td>
+          <td><input type="text" id="fc_vgv" class="input-calculado" readonly></td>
+          <td>R$</td>
+          <td>Calculado</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="section-title">Financiamento</div>
+    <div class="table-container">
+      <table>
+        <tr>
+          <th style="width:40%">Parâmetro</th>
+          <th style="width:20%">Valor</th>
+          <th style="width:15%">Unidade</th>
+          <th style="width:25%">Observação</th>
+        </tr>
+        <tr>
+          <td>% lotes à vista / banco</td>
+          <td><input type="text" id="fc_vista" class="input-editavel" value="70" onfocus="focarInput(this)" onblur="aplicarMascaraDecimal(this, 1); calcularFluxo()"></td>
+          <td>%</td>
+          <td>70% recebido na venda</td>
+        </tr>
+        <tr>
+          <td>% lotes financiados empreendedor</td>
+          <td><input type="text" id="fc_financ" class="input-calculado" readonly></td>
+          <td>%</td>
+          <td>Calculado</td>
+        </tr>
+        <tr>
+          <td>Prazo financiamento (meses)</td>
+          <td><input type="text" id="fc_prazo" class="input-editavel" value="120" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularFluxo()"></td>
+          <td>meses</td>
+          <td>Até 120 meses</td>
+        </tr>
+        <tr>
+          <td>Parcela por lote (R$/mês)</td>
+          <td><input type="text" id="fc_parcela" class="input-calculado" readonly></td>
+          <td>R$/lote/mês</td>
+          <td>Calculado</td>
+        </tr>
+        <tr>
+          <td>Percentual médio de sinal</td>
+          <td><input type="text" id="fc_sinal" class="input-editavel" value="10" onfocus="focarInput(this)" onblur="aplicarMascaraDecimal(this, 1); calcularFluxo()"></td>
+          <td>%</td>
+          <td>Entrada paga na venda</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="section-title">Taxas e Percentuais</div>
+    <div class="table-container">
+      <table>
+        <tr>
+          <th style="width:40%">Parâmetro</th>
+          <th style="width:20%">Valor</th>
+          <th style="width:15%">Unidade</th>
+          <th style="width:25%">Observação</th>
+        </tr>
+        <tr>
+          <td>Taxa de corretagem</td>
+          <td><input type="text" id="fc_corret" class="input-editavel" value="6" onfocus="focarInput(this)" onblur="aplicarMascaraDecimal(this, 1); calcularFluxo()"></td>
+          <td>% venda</td>
+          <td>6% sobre valor</td>
+        </tr>
+        <tr>
+          <td>Taxa administração (% VGV)</td>
+          <td><input type="text" id="fc_admin" class="input-editavel" value="3" onfocus="focarInput(this)" onblur="aplicarMascaraDecimal(this, 1); calcularFluxo()"></td>
+          <td>% VGV</td>
+          <td>3% do VGV</td>
+        </tr>
+        <tr>
+          <td>Taxa marketing (% VGV)</td>
+          <td><input type="text" id="fc_mkt" class="input-editavel" value="2" onfocus="focarInput(this)" onblur="aplicarMascaraDecimal(this, 1); calcularFluxo()"></td>
+          <td>% VGV</td>
+          <td>2% do VGV</td>
+        </tr>
+        <tr>
+          <td>Taxa contingência</td>
+          <td><input type="text" id="fc_conting" class="input-editavel" value="3" onfocus="focarInput(this)" onblur="aplicarMascaraDecimal(this, 1); calcularFluxo()"></td>
+          <td>% custos</td>
+          <td>3% sobre custos</td>
+        </tr>
+        <tr>
+          <td>Taxa impostos — Lucro Presumido</td>
+          <td><input type="text" id="fc_impostos" class="input-editavel" value="6.5" onfocus="focarInput(this)" onblur="aplicarMascaraDecimal(this, 1); calcularFluxo()"></td>
+          <td>% receita</td>
+          <td>PIS+COFINS+IRPJ+CSLL</td>
+        </tr>
+        <tr>
+          <td>% Empreendedor</td>
+          <td><input type="text" id="fc_perc_emp" class="input-editavel" value="65" onfocus="focarInput(this)" onblur="aplicarMascaraDecimal(this, 1); calcularFluxo()"></td>
+          <td>%</td>
+          <td>Base: lucro antes impostos</td>
+        </tr>
+        <tr>
+          <td>% Terrenista</td>
+          <td><input type="text" id="fc_perc_terr" class="input-calculado" readonly></td>
+          <td>%</td>
+          <td>Calculado</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="section-title">Capital</div>
+    <div class="table-container">
+      <table>
+        <tr>
+          <th style="width:40%">Parâmetro</th>
+          <th style="width:20%">Valor</th>
+          <th style="width:15%">Unidade</th>
+          <th style="width:25%">Observação</th>
+        </tr>
+        <tr>
+          <td>Capital próprio investido (R$)</td>
+          <td><input type="text" id="fc_capital" class="input-editavel" value="1000000" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularFluxo()"></td>
+          <td>R$</td>
+          <td>Aporte inicial — mês 0</td>
+        </tr>
+        <tr>
+          <td>Taxa custo financeiro (a.m.)</td>
+          <td><input type="text" id="fc_taxa_fin" class="input-editavel" value="1.5" onfocus="focarInput(this)" onblur="aplicarMascaraDecimal(this, 1); calcularFluxo()"></td>
+          <td>a.m.</td>
+          <td>1,5% sobre saldo negativo</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="section-title">Infraestrutura</div>
+    <div class="table-container">
+      <table>
+        <tr>
+          <th style="width:40%">Parâmetro</th>
+          <th style="width:20%">Valor</th>
+          <th style="width:15%">Unidade</th>
+          <th style="width:25%">Observação</th>
+        </tr>
+        <tr>
+          <td>Total infraestrutura (R$)</td>
+          <td><input type="text" id="fc_infra_total" class="input-editavel" value="5430000" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularFluxo()"></td>
+          <td>R$</td>
+          <td>Da planilha de viabilidade</td>
+        </tr>
+      </table>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════ CRONOGRAMA 48 MESES ═══════════════════ -->
+  <div id="cronograma" class="tab-content">
+
+    <div class="legend">
+      🟡 <strong>Lotes Vendidos, Infraestrutura e Marketing</strong> são editáveis. Demais colunas calculadas automaticamente.
+    </div>
+
+    <div class="section-title">Cronograma Mestre — 96 Meses</div>
+
+    <div style="margin-bottom:15px;">
+      <button class="btn-secondary" onclick="aplicarPadraoVendas()">📊 Aplicar Padrão de Vendas</button>
+      <button class="btn-secondary" onclick="aplicarPadraoInfra()">🏗️ Aplicar Padrão de Infraestrutura</button>
+      <button class="btn-secondary" onclick="aplicarPadraoMkt()">📢 Aplicar Padrão de Marketing</button>
+    </div>
+
+    <div class="table-container" style="max-height:600px; overflow-y:auto;">
+      <table id="tabelaCronograma">
+        <thead>
+          <tr>
+            <th class="center" style="width:40px;">Mês</th>
+            <th class="center" style="width:40px;">Ano</th>
+            <th style="width:80px;">Mês Nome</th>
+            <th class="center" style="width:70px;">Lotes Vendidos</th>
+            <th class="right" style="width:90px;">Infraestrutura</th>
+            <th class="right" style="width:90px;">Marketing</th>
+            <th class="right" style="width:90px;">Receita Vista</th>
+            <th class="right" style="width:90px;">Parcelas Receb.</th>
+            <th class="right" style="width:90px;">Total Receita</th>
+            <th class="right" style="width:90px;">Corretagem</th>
+            <th class="right" style="width:90px;">Admin</th>
+            <th class="right" style="width:90px;">Contingência</th>
+            <th class="right" style="width:100px;">Total Custos</th>
+            <th class="right" style="width:100px;">Res. Bruto</th>
+            <th class="right" style="width:90px;">Impostos</th>
+            <th class="right" style="width:90px;">Pagto. Terren.</th>
+            <th class="right" style="width:100px;">Res. Empreend.</th>
+            <th class="right" style="width:90px;">Custo Financ.</th>
+            <th class="right" style="width:100px;">Fluxo Líquido</th>
+            <th class="right" style="width:100px;">Fluxo Acumulado</th>
+          </tr>
+        </thead>
+        <tbody id="cronogramaBody">
+          <!-- Será preenchido por JavaScript -->
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════ ANO 1, 2, 3, 4 ═══════════════════ -->
+  <div id="ano1" class="tab-content">
+    <div class="section-title">Ano 1 — Meses 1 a 12</div>
+    <div class="table-container">
+      <table id="tabelaAno1">
+        <thead>
+          <tr>
+            <th>Mês</th>
+            <th class="center">Lotes</th>
+            <th class="right">Receita Vista</th>
+            <th class="right">Parcelas</th>
+            <th class="right">Total Receita</th>
+            <th class="right">(-) Infra</th>
+            <th class="right">(-) Custos Op.</th>
+            <th class="right">Res. Bruto</th>
+            <th class="right">Fluxo Líquido</th>
+            <th class="right">Acumulado</th>
+          </tr>
+        </thead>
+        <tbody id="ano1Body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="ano2" class="tab-content">
+    <div class="section-title">Ano 2 — Meses 13 a 24</div>
+    <div class="table-container">
+      <table id="tabelaAno2">
+        <thead>
+          <tr>
+            <th>Mês</th>
+            <th class="center">Lotes</th>
+            <th class="right">Receita Vista</th>
+            <th class="right">Parcelas</th>
+            <th class="right">Total Receita</th>
+            <th class="right">(-) Infra</th>
+            <th class="right">(-) Custos Op.</th>
+            <th class="right">Res. Bruto</th>
+            <th class="right">Fluxo Líquido</th>
+            <th class="right">Acumulado</th>
+          </tr>
+        </thead>
+        <tbody id="ano2Body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="ano3" class="tab-content">
+    <div class="section-title">Ano 3 — Meses 25 a 36</div>
+    <div class="table-container">
+      <table id="tabelaAno3">
+        <thead>
+          <tr>
+            <th>Mês</th>
+            <th class="center">Lotes</th>
+            <th class="right">Receita Vista</th>
+            <th class="right">Parcelas</th>
+            <th class="right">Total Receita</th>
+            <th class="right">(-) Infra</th>
+            <th class="right">(-) Custos Op.</th>
+            <th class="right">Res. Bruto</th>
+            <th class="right">Fluxo Líquido</th>
+            <th class="right">Acumulado</th>
+          </tr>
+        </thead>
+        <tbody id="ano3Body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="ano4" class="tab-content">
+    <div class="section-title">Ano 4 — Meses 37 a 48</div>
+    <div class="table-container">
+      <table id="tabelaAno4">
+        <thead>
+          <tr>
+            <th>Mês</th>
+            <th class="center">Lotes</th>
+            <th class="right">Receita Vista</th>
+            <th class="right">Parcelas</th>
+            <th class="right">Total Receita</th>
+            <th class="right">(-) Infra</th>
+            <th class="right">(-) Custos Op.</th>
+            <th class="right">Res. Bruto</th>
+            <th class="right">Fluxo Líquido</th>
+            <th class="right">Acumulado</th>
+          </tr>
+        </thead>
+        <tbody id="ano4Body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="ano5" class="tab-content">
+    <div class="section-title">Ano 5 — Meses 49 a 60</div>
+    <div class="table-container">
+      <table id="tabelaAno5">
+        <thead>
+          <tr>
+            <th>Mês</th>
+            <th class="center">Lotes</th>
+            <th class="right">Receita Vista</th>
+            <th class="right">Parcelas</th>
+            <th class="right">Total Receita</th>
+            <th class="right">(-) Infra</th>
+            <th class="right">(-) Custos Op.</th>
+            <th class="right">Res. Bruto</th>
+            <th class="right">Fluxo Líquido</th>
+            <th class="right">Acumulado</th>
+          </tr>
+        </thead>
+        <tbody id="ano5Body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="ano6" class="tab-content">
+    <div class="section-title">Ano 6 — Meses 61 a 72</div>
+    <div class="table-container">
+      <table id="tabelaAno6">
+        <thead>
+          <tr>
+            <th>Mês</th>
+            <th class="center">Lotes</th>
+            <th class="right">Receita Vista</th>
+            <th class="right">Parcelas</th>
+            <th class="right">Total Receita</th>
+            <th class="right">(-) Infra</th>
+            <th class="right">(-) Custos Op.</th>
+            <th class="right">Res. Bruto</th>
+            <th class="right">Fluxo Líquido</th>
+            <th class="right">Acumulado</th>
+          </tr>
+        </thead>
+        <tbody id="ano6Body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="ano7" class="tab-content">
+    <div class="section-title">Ano 7 — Meses 73 a 84</div>
+    <div class="table-container">
+      <table id="tabelaAno7">
+        <thead>
+          <tr>
+            <th>Mês</th>
+            <th class="center">Lotes</th>
+            <th class="right">Receita Vista</th>
+            <th class="right">Parcelas</th>
+            <th class="right">Total Receita</th>
+            <th class="right">(-) Infra</th>
+            <th class="right">(-) Custos Op.</th>
+            <th class="right">Res. Bruto</th>
+            <th class="right">Fluxo Líquido</th>
+            <th class="right">Acumulado</th>
+          </tr>
+        </thead>
+        <tbody id="ano7Body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="ano8" class="tab-content">
+    <div class="section-title">Ano 8 — Meses 85 a 96</div>
+    <div class="table-container">
+      <table id="tabelaAno8">
+        <thead>
+          <tr>
+            <th>Mês</th>
+            <th class="center">Lotes</th>
+            <th class="right">Receita Vista</th>
+            <th class="right">Parcelas</th>
+            <th class="right">Total Receita</th>
+            <th class="right">(-) Infra</th>
+            <th class="right">(-) Custos Op.</th>
+            <th class="right">Res. Bruto</th>
+            <th class="right">Fluxo Líquido</th>
+            <th class="right">Acumulado</th>
+          </tr>
+        </thead>
+        <tbody id="ano8Body"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- Botões de Ação -->
+<div class="actions">
+  <button class="btn-secondary" onclick="salvarDados()">💾 Salvar</button>
+  <button class="btn-secondary" onclick="carregarDados()">📂 Carregar</button>
+  <button class="btn-primary" onclick="window.print()">🖨️ Imprimir</button>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// VARIÁVEIS GLOBAIS
+// ═══════════════════════════════════════════════════════
+
+const MESES = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho",
+               "Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+
+let cronograma = []; // Array de 96 objetos com os dados de cada mês
+
+// ═══════════════════════════════════════════════════════
+// FUNÇÕES DE FORMATAÇÃO
+// ═══════════════════════════════════════════════════════
+
+function formataMoeda(valor) {
+  return 'R$ ' + Math.round(valor).toLocaleString('pt-BR');
+}
+
+function formataMoedaSemSimbolo(valor) {
+  return valor.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+}
+
+function formataInt(valor) {
+  return Math.floor(valor).toLocaleString('pt-BR');
+}
+
+function formataPerc(valor) {
+  return (valor * 100).toFixed(1) + '%';
+}
+
+// ═══════════════════════════════════════════════════════
+// MÁSCARAS DE ENTRADA — Formatação nos inputs
+// ═══════════════════════════════════════════════════════
+
+function removerMascara(valor) {
+  if (typeof valor === 'number') return valor;
+  if (!valor) return 0;
+  return parseFloat(valor.toString().replace(/[R$\s.]/g, '').replace(',', '.')) || 0;
+}
+
+function aplicarMascaraMoeda(input) {
+  let valor = removerMascara(input.value);
+  input.value = valor.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+}
+
+function aplicarMascaraInteiro(input) {
+  let valor = removerMascara(input.value);
+  input.value = Math.floor(valor).toLocaleString('pt-BR');
+}
+
+function aplicarMascaraDecimal(input, decimais = 1) {
+  let valor = removerMascara(input.value);
+  input.value = valor.toLocaleString('pt-BR', {minimumFractionDigits: decimais, maximumFractionDigits: decimais});
+}
+
+function focarInput(input) {
+  let valor = removerMascara(input.value);
+  input.value = valor;
+  input.select();
+}
+
+function getVal(id) {
+  const el = document.getElementById(id);
+  if (!el) return 0;
+  return removerMascara(el.value);
+}
+
+function setVal(id, valor) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (el.tagName === 'INPUT') {
+    el.value = valor;
+  } else {
+    el.textContent = valor;
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// INICIALIZAR CRONOGRAMA
+// ═══════════════════════════════════════════════════════
+
+function inicializarCronograma() {
+  cronograma = [];
+  for (let m = 1; m <= 96; m++) {
+    cronograma.push({
+      mes: m,
+      ano: Math.floor((m - 1) / 12) + 1,
+      mesNome: MESES[(m - 1) % 12],
+      lotesVendidos: 0,
+      infraestrutura: 0,
+      marketing: 0,
+      receitaVista: 0,
+      parcelasRecebidas: 0,
+      totalReceita: 0,
+      corretagem: 0,
+      admin: 0,
+      contingencia: 0,
+      totalCustos: 0,
+      resultadoBruto: 0,
+      pagtoTerrenista: 0,
+      resEmpreendedor: 0,
+      impostos: 0,
+      custoFinanceiro: 0,
+      fluxoLiquido: 0,
+      fluxoAcumulado: 0
+    });
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// PADRÕES DE PREENCHIMENTO
+// ═══════════════════════════════════════════════════════
+
+function aplicarPadraoVendas() {
+  // Padrão: mês 7 = 40 lotes, meses 8-36 = 10 lotes/mês
+  cronograma.forEach((item, idx) => {
+    const m = idx + 1;
+    if (m < 7) item.lotesVendidos = 0;
+    else if (m === 7) item.lotesVendidos = 40;
+    else if (m <= 36) item.lotesVendidos = 10;
+    else item.lotesVendidos = 0;
+  });
+  calcularFluxo();
+  alert('✅ Padrão de vendas aplicado!');
+}
+
+function aplicarPadraoInfra() {
+  // Padrão de infraestrutura dos meses 1-24
+  const padrao = {
+    1:50000,2:100000,3:100000,4:200000,5:300000,6:300000,
+    7:400000,8:400000,9:400000,10:400000,11:400000,12:380000,
+    13:350000,14:350000,15:300000,16:200000,17:150000,18:100000,
+    19:100000,20:80000,21:60000,22:50000,23:30000,24:30000
+  };
+
+  const totalPadrao = Object.values(padrao).reduce((a,b) => a+b, 0);
+  const infraTotal = getVal('fc_infra_total');
+  const resto = infraTotal - totalPadrao;
+  const mesResto = resto / 24;
+
+  cronograma.forEach((item, idx) => {
+    const m = idx + 1;
+    if (padrao[m]) {
+      item.infraestrutura = padrao[m];
+    } else if (m > 24) {
+      item.infraestrutura = Math.max(0, mesResto);
+    } else {
+      item.infraestrutura = 0;
+    }
+  });
+  calcularFluxo();
+  alert('✅ Padrão de infraestrutura aplicado!');
+}
+
+function aplicarPadraoMkt() {
+  // Padrão de marketing: concentrado nos primeiros meses de lançamento
+  const padrao = {5:50000,6:100000,7:100000,8:50000,9:30000,
+                  10:20000,11:20000,12:20000};
+  for (let m = 13; m <= 24; m++) padrao[m] = 5000;
+
+  const vgv = getVal('fc_preco') * getVal('fc_lotes');
+  const mktTotal = vgv * (getVal('fc_mkt') / 100);
+  const totalPadrao = Object.values(padrao).reduce((a,b) => a+b, 0);
+  const resto = Math.max(0, mktTotal - totalPadrao);
+  const mesResto = resto / 24;
+
+  cronograma.forEach((item, idx) => {
+    const m = idx + 1;
+    if (padrao[m]) {
+      item.marketing = padrao[m];
+    } else if (m > 24) {
+      item.marketing = mesResto;
+    } else {
+      item.marketing = 0;
+    }
+  });
+  calcularFluxo();
+  alert('✅ Padrão de marketing aplicado!');
+}
+
+// ═══════════════════════════════════════════════════════
+// CALCULAR FLUXO DE CAIXA
+// ═══════════════════════════════════════════════════════
+
+function calcularFluxo() {
+  // Ler parâmetros
+  const preco = getVal('fc_preco');
+  const lotes = getVal('fc_lotes');
+  const vgv = preco * lotes;
+  const vista = getVal('fc_vista') / 100;
+  const financ = 1 - vista;
+  const prazo = getVal('fc_prazo');
+  const sinal = getVal('fc_sinal') / 100;
+  const saldo_apos_sinal = preco * (1 - sinal);
+  const parcela = saldo_apos_sinal / prazo;
+  const corret = getVal('fc_corret') / 100;
+  const admin = getVal('fc_admin') / 100;
+  const mkt = getVal('fc_mkt') / 100;
+  const conting = getVal('fc_conting') / 100;
+  const impostos = getVal('fc_impostos') / 100;
+  const perc_emp = getVal('fc_perc_emp') / 100;
+  const perc_terr = 1 - perc_emp;
+  const capital = getVal('fc_capital');
+  const taxa_fin = getVal('fc_taxa_fin') / 100;
+
+  // Atualizar campos calculados dos parâmetros
+  setVal('fc_vgv', formataMoeda(vgv));
+  setVal('fc_financ', formataPerc(financ));
+  setVal('fc_parcela', formataMoeda(parcela));
+  setVal('fc_perc_terr', formataPerc(perc_terr));
+
+  // Calcular cada mês
+  const adminMensal = (vgv * admin) / 96;
+
+  cronograma.forEach((mes, idx) => {
+    const m = idx + 1;
+
+    // Receita à vista
+    mes.receitaVista = mes.lotesVendidos * preco * vista;
+
+    // Parcelas recebidas: SUMPRODUCT de lotes vendidos nos últimos 'prazo' meses
+    let parcReceb = 0;
+    for (let j = 0; j < m; j++) {
+      const mVenda = m - j;
+      if (mVenda > 0 && mVenda >= (m - prazo)) {
+        const lotesVendidosJ = cronograma[mVenda - 1].lotesVendidos;
+        parcReceb += lotesVendidosJ * parcela;
+      }
+    }
+    mes.parcelasRecebidas = parcReceb;
+
+    // Total Receita
+    mes.totalReceita = mes.receitaVista + mes.parcelasRecebidas;
+
+    // Custos
+    mes.corretagem = mes.lotesVendidos * preco * corret;
+    mes.admin = adminMensal;
+    const custosDiretos = mes.infraestrutura + mes.marketing + mes.corretagem + mes.admin;
+    mes.contingencia = custosDiretos * conting;
+    mes.totalCustos = custosDiretos + mes.contingencia;
+
+    // Resultado Bruto
+    mes.resultadoBruto = mes.totalReceita - mes.totalCustos;
+
+    // Impostos (calculados ANTES do pagamento ao terrenista)
+    mes.impostos = mes.totalReceita * impostos;
+
+    // Pagamento Terrenista (sobre resultado após impostos)
+    const resAposImpostos = mes.resultadoBruto - mes.impostos;
+    mes.pagtoTerrenista = Math.max(0, resAposImpostos) * perc_terr;
+
+    // Resultado Empreendedor
+    mes.resEmpreendedor = resAposImpostos - mes.pagtoTerrenista;
+
+    // Custo Financeiro
+    if (m === 1) {
+      mes.custoFinanceiro = capital * taxa_fin;
+    } else {
+      const acumAnterior = cronograma[m - 2].fluxoAcumulado;
+      mes.custoFinanceiro = Math.max(0, -acumAnterior) * taxa_fin;
+    }
+
+    // Fluxo Líquido
+    mes.fluxoLiquido = mes.resEmpreendedor - mes.custoFinanceiro;
+
+    // Fluxo Acumulado
+    if (m === 1) {
+      mes.fluxoAcumulado = mes.fluxoLiquido - capital;
+    } else {
+      mes.fluxoAcumulado = cronograma[m - 2].fluxoAcumulado + mes.fluxoLiquido;
+    }
+  });
+
+  renderizarCronograma();
+  renderizarAnos();
+  atualizarResumo();
+  salvarDadosAuto();
+}
+
+// ═══════════════════════════════════════════════════════
+// RENDERIZAR TABELAS
+// ═══════════════════════════════════════════════════════
+
+function renderizarCronograma() {
+  const tbody = document.getElementById('cronogramaBody');
+  tbody.innerHTML = '';
+
+  cronograma.forEach((mes, idx) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="center">${mes.mes}</td>
+      <td class="center">${mes.ano}</td>
+      <td class="mes-nome">${mes.mesNome}</td>
+      <td class="center"><input type="text" class="input-editavel input-mes" value="${mes.lotesVendidos}" onchange="atualizarMes(${idx}, 'lotesVendidos', this.value)" oninput="this.value = this.value.replace(/[^0-9]/g, '')"></td>
+      <td class="right"><input type="text" class="input-editavel input-mes" value="${mes.infraestrutura}" onchange="atualizarMes(${idx}, 'infraestrutura', this.value)" style="text-align:right;" oninput="this.value = this.value.replace(/[^0-9]/g, '')"></td>
+      <td class="right"><input type="text" class="input-editavel input-mes" value="${mes.marketing}" onchange="atualizarMes(${idx}, 'marketing', this.value)" style="text-align:right;" oninput="this.value = this.value.replace(/[^0-9]/g, '')"></td>
+      <td class="right">${formataMoedaSemSimbolo(mes.receitaVista)}</td>
+      <td class="right">${formataMoedaSemSimbolo(mes.parcelasRecebidas)}</td>
+      <td class="right"><strong>${formataMoedaSemSimbolo(mes.totalReceita)}</strong></td>
+      <td class="right">${formataMoedaSemSimbolo(mes.corretagem)}</td>
+      <td class="right">${formataMoedaSemSimbolo(mes.admin)}</td>
+      <td class="right">${formataMoedaSemSimbolo(mes.contingencia)}</td>
+      <td class="right"><strong>${formataMoedaSemSimbolo(mes.totalCustos)}</strong></td>
+      <td class="right ${mes.resultadoBruto >= 0 ? 'valor-positivo' : 'valor-negativo'}">${formataMoedaSemSimbolo(mes.resultadoBruto)}</td>
+      <td class="right">${formataMoedaSemSimbolo(mes.impostos)}</td>
+      <td class="right">${formataMoedaSemSimbolo(mes.pagtoTerrenista)}</td>
+      <td class="right">${formataMoedaSemSimbolo(mes.resEmpreendedor)}</td>
+      <td class="right">${formataMoedaSemSimbolo(mes.custoFinanceiro)}</td>
+      <td class="right ${mes.fluxoLiquido >= 0 ? 'valor-positivo' : 'valor-negativo'}"><strong>${formataMoedaSemSimbolo(mes.fluxoLiquido)}</strong></td>
+      <td class="right ${mes.fluxoAcumulado >= 0 ? 'valor-positivo' : 'valor-negativo'}"><strong>${formataMoedaSemSimbolo(mes.fluxoAcumulado)}</strong></td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // Linha de TOTAL após os 96 meses
+  let totais = {
+    lotes: 0, infra: 0, mkt: 0, recVista: 0, parcelas: 0, recTotal: 0,
+    corret: 0, admin: 0, conting: 0, custos: 0, bruto: 0, impostos: 0,
+    terr: 0, empre: 0, cfin: 0, liq: 0
+  };
+
+  cronograma.forEach(mes => {
+    totais.lotes += mes.lotesVendidos;
+    totais.infra += mes.infraestrutura;
+    totais.mkt += mes.marketing;
+    totais.recVista += mes.receitaVista;
+    totais.parcelas += mes.parcelasRecebidas;
+    totais.recTotal += mes.totalReceita;
+    totais.corret += mes.corretagem;
+    totais.admin += mes.admin;
+    totais.conting += mes.contingencia;
+    totais.custos += mes.totalCustos;
+    totais.bruto += mes.resultadoBruto;
+    totais.impostos += mes.impostos;
+    totais.terr += mes.pagtoTerrenista;
+    totais.empre += mes.resEmpreendedor;
+    totais.cfin += mes.custoFinanceiro;
+    totais.liq += mes.fluxoLiquido;
+  });
+
+  const trTotal = document.createElement('tr');
+  trTotal.style.background = '#D5E8D4';
+  trTotal.style.fontWeight = '700';
+  trTotal.style.color = '#117A65';
+  trTotal.innerHTML = `
+    <td class="center" colspan="3"><strong>TOTAL 96 MESES</strong></td>
+    <td class="center"><strong>${totais.lotes}</strong></td>
+    <td class="right"><strong>${formataMoedaSemSimbolo(totais.infra)}</strong></td>
+    <td class="right"><strong>${formataMoedaSemSimbolo(totais.mkt)}</strong></td>
+    <td class="right"><strong>${formataMoedaSemSimbolo(totais.recVista)}</strong></td>
+    <td class="right"><strong>${formataMoedaSemSimbolo(totais.parcelas)}</strong></td>
+    <td class="right"><strong>${formataMoedaSemSimbolo(totais.recTotal)}</strong></td>
+    <td class="right"><strong>${formataMoedaSemSimbolo(totais.corret)}</strong></td>
+    <td class="right"><strong>${formataMoedaSemSimbolo(totais.admin)}</strong></td>
+    <td class="right"><strong>${formataMoedaSemSimbolo(totais.conting)}</strong></td>
+    <td class="right"><strong>${formataMoedaSemSimbolo(totais.custos)}</strong></td>
+    <td class="right"><strong>${formataMoedaSemSimbolo(totais.bruto)}</strong></td>
+    <td class="right"><strong>${formataMoedaSemSimbolo(totais.impostos)}</strong></td>
+    <td class="right"><strong>${formataMoedaSemSimbolo(totais.terr)}</strong></td>
+    <td class="right"><strong>${formataMoedaSemSimbolo(totais.empre)}</strong></td>
+    <td class="right"><strong>${formataMoedaSemSimbolo(totais.cfin)}</strong></td>
+    <td class="right"><strong>${formataMoedaSemSimbolo(totais.liq)}</strong></td>
+    <td class="right"><strong>${formataMoedaSemSimbolo(cronograma[95].fluxoAcumulado)}</strong></td>
+  `;
+  tbody.appendChild(trTotal);
+}
+
+function atualizarMes(idx, campo, valor) {
+  cronograma[idx][campo] = parseFloat(valor) || 0;
+  calcularFluxo();
+}
+
+function renderizarAnos() {
+  for (let ano = 1; ano <= 8; ano++) {
+    const tbody = document.getElementById(`ano${ano}Body`);
+    if (!tbody) {
+      console.warn(`Elemento ano${ano}Body não encontrado`);
+      continue;
+    }
+    tbody.innerHTML = '';
+
+    const mesInicio = (ano - 1) * 12;
+    const mesFim = ano * 12;
+
+    for (let idx = mesInicio; idx < mesFim; idx++) {
+      const mes = cronograma[idx];
+      const custosOp = mes.corretagem + mes.admin + mes.marketing + mes.contingencia;
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="mes-nome">${mes.mesNome}</td>
+        <td class="center">${mes.lotesVendidos}</td>
+        <td class="right">${formataMoeda(mes.receitaVista)}</td>
+        <td class="right">${formataMoeda(mes.parcelasRecebidas)}</td>
+        <td class="right"><strong>${formataMoeda(mes.totalReceita)}</strong></td>
+        <td class="right">${formataMoeda(mes.infraestrutura)}</td>
+        <td class="right">${formataMoeda(custosOp)}</td>
+        <td class="right ${mes.resultadoBruto >= 0 ? 'valor-positivo' : 'valor-negativo'}">${formataMoeda(mes.resultadoBruto)}</td>
+        <td class="right ${mes.fluxoLiquido >= 0 ? 'valor-positivo' : 'valor-negativo'}"><strong>${formataMoeda(mes.fluxoLiquido)}</strong></td>
+        <td class="right ${mes.fluxoAcumulado >= 0 ? 'valor-positivo' : 'valor-negativo'}"><strong>${formataMoeda(mes.fluxoAcumulado)}</strong></td>
+      `;
+      tbody.appendChild(tr);
+    }
+
+    // Linha de total do ano
+    const totais = calcularTotaisAno(ano);
+    const trTotal = document.createElement('tr');
+    trTotal.className = 'total';
+    trTotal.innerHTML = `
+      <td><strong>TOTAL ANO ${ano}</strong></td>
+      <td class="center"><strong>${totais.lotes}</strong></td>
+      <td class="right"><strong>${formataMoeda(totais.vista)}</strong></td>
+      <td class="right"><strong>${formataMoeda(totais.parc)}</strong></td>
+      <td class="right"><strong>${formataMoeda(totais.rec)}</strong></td>
+      <td class="right"><strong>${formataMoeda(totais.infra)}</strong></td>
+      <td class="right"><strong>${formataMoeda(totais.custos)}</strong></td>
+      <td class="right"><strong>${formataMoeda(totais.bruto)}</strong></td>
+      <td class="right"><strong>${formataMoeda(totais.liq)}</strong></td>
+      <td class="right"><strong>${formataMoeda(cronograma[mesFim - 1].fluxoAcumulado)}</strong></td>
+    `;
+    tbody.appendChild(trTotal);
+  }
+}
+
+function calcularTotaisAno(ano) {
+  const mesInicio = (ano - 1) * 12;
+  const mesFim = ano * 12;
+
+  let totais = {
+    lotes: 0, vista: 0, parc: 0, rec: 0, infra: 0, custos: 0,
+    bruto: 0, liq: 0, corret: 0, admin: 0, terr: 0, imp: 0, cfin: 0, cont: 0
+  };
+
+  for (let idx = mesInicio; idx < mesFim; idx++) {
+    const mes = cronograma[idx];
+    totais.lotes += mes.lotesVendidos;
+    totais.vista += mes.receitaVista;
+    totais.parc += mes.parcelasRecebidas;
+    totais.rec += mes.totalReceita;
+    totais.infra += mes.infraestrutura;
+    totais.custos += mes.corretagem + mes.admin + mes.marketing + mes.contingencia;
+    totais.bruto += mes.resultadoBruto;
+    totais.liq += mes.fluxoLiquido;
+    totais.corret += mes.corretagem;
+    totais.admin += mes.admin + mes.marketing;
+    totais.terr += mes.pagtoTerrenista;
+    totais.imp += mes.impostos;
+    totais.cfin += mes.custoFinanceiro;
+    totais.cont += mes.contingencia;
+  }
+
+  return totais;
+}
+
+// ═══════════════════════════════════════════════════════
+// ATUALIZAR RESUMO
+// ═══════════════════════════════════════════════════════
+
+function atualizarResumo() {
+  let totalGeral = {
+    lotes: 0, vista: 0, parc: 0, rec: 0, infra: 0, custos: 0,
+    bruto: 0, liq: 0, corret: 0, admin: 0, terr: 0, imp: 0, cfin: 0, cont: 0
+  };
+
+  for (let ano = 1; ano <= 8; ano++) {
+    const totais = calcularTotaisAno(ano);
+
+    setVal(`res_ano${ano}_lotes`, formataInt(totais.lotes));
+    setVal(`res_ano${ano}_vista`, formataMoeda(totais.vista));
+    setVal(`res_ano${ano}_parc`, formataMoeda(totais.parc));
+    setVal(`res_ano${ano}_rec`, formataMoeda(totais.rec));
+    setVal(`res_ano${ano}_infra`, formataMoeda(totais.infra));
+    setVal(`res_ano${ano}_corret`, formataMoeda(totais.corret));
+    setVal(`res_ano${ano}_admin`, formataMoeda(totais.admin));
+    setVal(`res_ano${ano}_cont`, formataMoeda(totais.cont));
+    setVal(`res_ano${ano}_custos`, formataMoeda(totais.infra + totais.custos));
+    setVal(`res_ano${ano}_bruto`, formataMoeda(totais.bruto));
+    setVal(`res_ano${ano}_terr`, formataMoeda(totais.terr));
+    setVal(`res_ano${ano}_imp`, formataMoeda(totais.imp));
+    setVal(`res_ano${ano}_cfin`, formataMoeda(totais.cfin));
+    setVal(`res_ano${ano}_liq`, formataMoeda(totais.liq));
+    setVal(`res_ano${ano}_acum`, formataMoeda(cronograma[ano * 12 - 1].fluxoAcumulado));
+
+    // Acumular para o total geral
+    totalGeral.lotes += totais.lotes;
+    totalGeral.vista += totais.vista;
+    totalGeral.parc += totais.parc;
+    totalGeral.rec += totais.rec;
+    totalGeral.infra += totais.infra;
+    totalGeral.custos += totais.custos;
+    totalGeral.bruto += totais.bruto;
+    totalGeral.liq += totais.liq;
+    totalGeral.corret += totais.corret;
+    totalGeral.admin += totais.admin;
+    totalGeral.terr += totais.terr;
+    totalGeral.imp += totais.imp;
+    totalGeral.cfin += totais.cfin;
+    totalGeral.cont += totais.cont;
+  }
+
+  // Total geral
+  setVal('res_total_lotes', formataInt(totalGeral.lotes));
+  setVal('res_total_vista', formataMoeda(totalGeral.vista));
+  setVal('res_total_parc', formataMoeda(totalGeral.parc));
+  setVal('res_total_rec', formataMoeda(totalGeral.rec));
+  setVal('res_total_infra', formataMoeda(totalGeral.infra));
+  setVal('res_total_corret', formataMoeda(totalGeral.corret));
+  setVal('res_total_admin', formataMoeda(totalGeral.admin));
+  setVal('res_total_cont', formataMoeda(totalGeral.cont));
+  setVal('res_total_custos', formataMoeda(totalGeral.infra + totalGeral.custos));
+  setVal('res_total_bruto', formataMoeda(totalGeral.bruto));
+  setVal('res_total_terr', formataMoeda(totalGeral.terr));
+  setVal('res_total_imp', formataMoeda(totalGeral.imp));
+  setVal('res_total_cfin', formataMoeda(totalGeral.cfin));
+  setVal('res_total_liq', formataMoeda(totalGeral.liq));
+  setVal('res_total_acum', formataMoeda(cronograma[95].fluxoAcumulado));
+
+  // KPIs
+  setVal('res_lotes_total', formataInt(totalGeral.lotes));
+  setVal('res_receita_total', formataMoeda(totalGeral.rec));
+  setVal('res_custos_total', formataMoeda(totalGeral.infra + totalGeral.custos));
+  setVal('res_fluxo_liquido', formataMoeda(totalGeral.liq));
+}
+
+// ═══════════════════════════════════════════════════════
+// SISTEMA DE ABAS
+// ═══════════════════════════════════════════════════════
+
+function showTab(tabName, clickedButton) {
+  // Esconder todos os conteúdos
+  const contents = document.querySelectorAll('.tab-content');
+  contents.forEach(c => c.classList.remove('active'));
+
+  // Remover active de todas as tabs
+  const tabs = document.querySelectorAll('.tab');
+  tabs.forEach(t => t.classList.remove('active'));
+
+  // Mostrar conteúdo selecionado
+  const targetContent = document.getElementById(tabName);
+  if (targetContent) {
+    targetContent.classList.add('active');
+  }
+
+  // Ativar tab clicada
+  if (clickedButton) {
+    clickedButton.classList.add('active');
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// SALVAR E CARREGAR DADOS
+// ═══════════════════════════════════════════════════════
+
+function salvarDadosAuto() {
+  const dados = {
+    fc_preco: getVal('fc_preco'),
+    fc_lotes: getVal('fc_lotes'),
+    fc_vista: getVal('fc_vista'),
+    fc_prazo: getVal('fc_prazo'),
+    fc_sinal: getVal('fc_sinal'),
+    fc_corret: getVal('fc_corret'),
+    fc_admin: getVal('fc_admin'),
+    fc_mkt: getVal('fc_mkt'),
+    fc_conting: getVal('fc_conting'),
+    fc_impostos: getVal('fc_impostos'),
+    fc_perc_emp: getVal('fc_perc_emp'),
+    fc_capital: getVal('fc_capital'),
+    fc_taxa_fin: getVal('fc_taxa_fin'),
+    fc_infra_total: getVal('fc_infra_total'),
+    cronograma: cronograma
+  };
+  localStorage.setItem('fluxo_caixa_papagaios', JSON.stringify(dados));
+}
+
+function salvarDados() {
+  salvarDadosAuto();
+  alert('✅ Dados salvos com sucesso!');
+}
+
+function carregarDados() {
+  const dadosStr = localStorage.getItem('fluxo_caixa_papagaios');
+  if (!dadosStr) {
+    alert('⚠️ Nenhum dado salvo encontrado.');
+    return;
+  }
+
+  const dados = JSON.parse(dadosStr);
+
+  // Carregar parâmetros
+  Object.keys(dados).forEach(key => {
+    if (key !== 'cronograma') {
+      const el = document.getElementById(key);
+      if (el) el.value = dados[key];
+    }
+  });
+
+  // Carregar cronograma - verificar compatibilidade
+  if (dados.cronograma && dados.cronograma.length === 96) {
+    cronograma = dados.cronograma;
+  } else {
+    alert('⚠️ Dados salvos são da versão antiga (48 meses). Inicializando nova versão com 96 meses.');
+    inicializarCronograma();
+  }
+
+  calcularFluxo();
+  alert('✅ Dados carregados com sucesso!');
+}
+
+function carregarDadosIniciais() {
+  const dadosStr = localStorage.getItem('fluxo_caixa_papagaios');
+  if (dadosStr) {
+    const dados = JSON.parse(dadosStr);
+    Object.keys(dados).forEach(key => {
+      if (key !== 'cronograma') {
+        const el = document.getElementById(key);
+        if (el) el.value = dados[key];
+      }
+    });
+    // Verificar se cronograma carregado tem 96 meses (compatibilidade com versão antiga de 48 meses)
+    if (dados.cronograma && dados.cronograma.length === 96) {
+      cronograma = dados.cronograma;
+    } else {
+      // Se for dados antigos (48 meses) ou inválido, reinicializar com 96 meses
+      console.log('Dados antigos detectados - reinicializando cronograma para 96 meses');
+      inicializarCronograma();
+    }
+  }
+  calcularFluxo();
+}
+
+// ═══════════════════════════════════════════════════════
+// INICIALIZAR MÁSCARAS EM TODOS OS INPUTS
+// ═══════════════════════════════════════════════════════
+
+function inicializarMascaras() {
+  const inputsMoeda = ['fc_preco', 'fc_capital', 'fc_infra_total'];
+  inputsMoeda.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && !el.readOnly) aplicarMascaraMoeda(el);
+  });
+
+  const inputsDecimal = ['fc_vista', 'fc_corret', 'fc_admin', 'fc_mkt',
+                         'fc_conting', 'fc_impostos', 'fc_perc_emp', 'fc_taxa_fin'];
+  inputsDecimal.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && !el.readOnly) aplicarMascaraDecimal(el, 1);
+  });
+
+  const inputsInteiro = ['fc_lotes', 'fc_prazo'];
+  inputsInteiro.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && !el.readOnly) aplicarMascaraInteiro(el);
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// INICIALIZAÇÃO
+// ═══════════════════════════════════════════════════════
+
+window.addEventListener('DOMContentLoaded', () => {
+  inicializarCronograma();
+  carregarDadosIniciais();
+  setTimeout(() => {
+    inicializarMascaras();
+  }, 100);
+  console.log('✅ Fluxo de Caixa Mensal carregado com máscaras!');
+});
+
+</script>
+
+</body>
+</html>
