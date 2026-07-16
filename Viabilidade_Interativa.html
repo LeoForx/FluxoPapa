@@ -43,6 +43,48 @@
     font-size: 14px;
   }
 
+  .btn-actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    justify-content: flex-end;
+  }
+
+  .btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-primary {
+    background: #1F4E79;
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background: #163a5a;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(31, 78, 121, 0.3);
+  }
+
+  .btn-secondary {
+    background: #2E75B6;
+    color: white;
+  }
+
+  .btn-secondary:hover {
+    background: #235a8f;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(46, 117, 182, 0.3);
+  }
+
   .tabs {
     display: flex;
     gap: 8px;
@@ -449,6 +491,12 @@
   <div class="header">
     <h1>🏗️ Loteamento Papagaios — Calculadora de Viabilidade Interativa</h1>
     <p>Edite as premissas e veja todos os cálculos atualizarem em tempo real • Papagaios/MG • 16 hectares • 330 lotes</p>
+  </div>
+
+  <div class="btn-actions">
+    <button class="btn btn-secondary" onclick="exportarDados()">💾 Exportar Dados</button>
+    <button class="btn btn-primary" onclick="document.getElementById('importFile').click()">📂 Importar Dados</button>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importarDados(event)">
   </div>
 
   <div class="tabs">
@@ -2484,6 +2532,242 @@ function inicializarMascaras() {
     const el = document.getElementById(id);
     if (el && !el.readOnly) aplicarMascaraInteiro(el);
   });
+}
+
+// ═══════════════════════════════════════════════════════
+// EXPORTAR / IMPORTAR DADOS
+// ═══════════════════════════════════════════════════════
+
+function exportarDados() {
+  const dados = {
+    premissas: {
+      area_ha: getVal('p_area_ha'),
+      localizacao: document.getElementById('p_localizacao').value,
+      tipo: document.getElementById('p_tipo').value,
+      vias: getVal('p_vias'),
+      verdes: getVal('p_verdes'),
+      institucional: getVal('p_institucional'),
+      tamanho_lote: getVal('p_tamanho_lote'),
+      lotes: getVal('p_lotes'),
+      perc_emp: getVal('p_perc_emp'),
+      preco: getVal('p_preco'),
+      corretagem: getVal('p_corretagem'),
+      marketing: getVal('p_marketing'),
+      admin: getVal('p_admin'),
+      contingencia: getVal('p_contingencia'),
+      impostos: getVal('p_impostos'),
+      capital: getVal('p_capital'),
+      taxa_fin: getVal('p_taxa_fin'),
+      vista: getVal('p_vista'),
+      prazo: getVal('p_prazo')
+    },
+    infraestrutura: {
+      // Terraplanagem
+      limp_qtd: getVal('i_limp_qtd'),
+      limp_unit: getVal('i_limp_unit'),
+      corte_qtd: getVal('i_corte_qtd'),
+      corte_unit: getVal('i_corte_unit'),
+      aterro_qtd: getVal('i_aterro_qtd'),
+      aterro_unit: getVal('i_aterro_unit'),
+      // Pavimentação
+      pav_base_qtd: getVal('i_pav_base_qtd'),
+      pav_base_unit: getVal('i_pav_base_unit'),
+      pav_asfalto_qtd: getVal('i_pav_asfalto_qtd'),
+      pav_asfalto_unit: getVal('i_pav_asfalto_unit'),
+      pav_meio_qtd: getVal('i_pav_meio_qtd'),
+      pav_meio_unit: getVal('i_pav_meio_unit'),
+      // Drenagem
+      dren_tubo_qtd: getVal('i_dren_tubo_qtd'),
+      dren_tubo_unit: getVal('i_dren_tubo_unit'),
+      dren_boca_qtd: getVal('i_dren_boca_qtd'),
+      dren_boca_unit: getVal('i_dren_boca_unit'),
+      // Água
+      agua_rede_qtd: getVal('i_agua_rede_qtd'),
+      agua_rede_unit: getVal('i_agua_rede_unit'),
+      agua_lig_qtd: getVal('i_agua_lig_qtd'),
+      agua_lig_unit: getVal('i_agua_lig_unit'),
+      agua_reserv_qtd: getVal('i_agua_reserv_qtd'),
+      agua_reserv_unit: getVal('i_agua_reserv_unit'),
+      // Esgoto
+      esg_rede_qtd: getVal('i_esg_rede_qtd'),
+      esg_rede_unit: getVal('i_esg_rede_unit'),
+      esg_lig_qtd: getVal('i_esg_lig_qtd'),
+      esg_lig_unit: getVal('i_esg_lig_unit'),
+      esg_ele_qtd: getVal('i_esg_ele_qtd'),
+      esg_ele_unit: getVal('i_esg_ele_unit'),
+      // Energia
+      energ_poste_qtd: getVal('i_energ_poste_qtd'),
+      energ_poste_unit: getVal('i_energ_poste_unit'),
+      energ_cabo_qtd: getVal('i_energ_cabo_qtd'),
+      energ_cabo_unit: getVal('i_energ_cabo_unit'),
+      energ_transf_qtd: getVal('i_energ_transf_qtd'),
+      energ_transf_unit: getVal('i_energ_transf_unit'),
+      // Iluminação
+      ilum_poste_qtd: getVal('i_ilum_poste_qtd'),
+      ilum_poste_unit: getVal('i_ilum_poste_unit'),
+      ilum_cabo_qtd: getVal('i_ilum_cabo_qtd'),
+      ilum_cabo_unit: getVal('i_ilum_cabo_unit'),
+      // Sinalização
+      sinal_vert_qtd: getVal('i_sinal_vert_qtd'),
+      sinal_vert_unit: getVal('i_sinal_vert_unit'),
+      sinal_horiz_qtd: getVal('i_sinal_horiz_qtd'),
+      sinal_horiz_unit: getVal('i_sinal_horiz_unit'),
+      // Projetos
+      proj_topo_qtd: getVal('i_proj_topo_qtd'),
+      proj_topo_unit: getVal('i_proj_topo_unit'),
+      proj_urb_qtd: getVal('i_proj_urb_qtd'),
+      proj_urb_unit: getVal('i_proj_urb_unit'),
+      proj_hidro_qtd: getVal('i_proj_hidro_qtd'),
+      proj_hidro_unit: getVal('i_proj_hidro_unit'),
+      proj_ambiental_qtd: getVal('i_proj_ambiental_qtd'),
+      proj_ambiental_unit: getVal('i_proj_ambiental_unit'),
+      // Diversos
+      div_cerca_qtd: getVal('i_div_cerca_qtd'),
+      div_cerca_unit: getVal('i_div_cerca_unit'),
+      div_port_qtd: getVal('i_div_port_qtd'),
+      div_port_unit: getVal('i_div_port_unit'),
+      div_plant_qtd: getVal('i_div_plant_qtd'),
+      div_plant_unit: getVal('i_div_plant_unit'),
+      div_guard_qtd: getVal('i_div_guard_qtd'),
+      div_guard_unit: getVal('i_div_guard_unit')
+    },
+    dataExportacao: new Date().toISOString()
+  };
+
+  const blob = new Blob([JSON.stringify(dados, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `viabilidade_papagaios_${new Date().toISOString().split('T')[0]}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  alert('✅ Dados exportados com sucesso!');
+}
+
+function importarDados(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const dados = JSON.parse(e.target.result);
+
+      // Importar premissas
+      if (dados.premissas) {
+        setVal('p_area_ha', dados.premissas.area_ha);
+        if (dados.premissas.localizacao) document.getElementById('p_localizacao').value = dados.premissas.localizacao;
+        if (dados.premissas.tipo) document.getElementById('p_tipo').value = dados.premissas.tipo;
+        setVal('p_vias', dados.premissas.vias);
+        setVal('p_verdes', dados.premissas.verdes);
+        setVal('p_institucional', dados.premissas.institucional);
+        setVal('p_tamanho_lote', dados.premissas.tamanho_lote);
+        setVal('p_lotes', dados.premissas.lotes);
+        setVal('p_perc_emp', dados.premissas.perc_emp);
+        setVal('p_preco', dados.premissas.preco);
+        setVal('p_corretagem', dados.premissas.corretagem);
+        setVal('p_marketing', dados.premissas.marketing);
+        setVal('p_admin', dados.premissas.admin);
+        setVal('p_contingencia', dados.premissas.contingencia);
+        setVal('p_impostos', dados.premissas.impostos);
+        setVal('p_capital', dados.premissas.capital);
+        setVal('p_taxa_fin', dados.premissas.taxa_fin);
+        setVal('p_vista', dados.premissas.vista);
+        setVal('p_prazo', dados.premissas.prazo);
+      }
+
+      // Importar infraestrutura
+      if (dados.infraestrutura) {
+        const infra = dados.infraestrutura;
+        // Terraplanagem
+        setVal('i_limp_qtd', infra.limp_qtd);
+        setVal('i_limp_unit', infra.limp_unit);
+        setVal('i_corte_qtd', infra.corte_qtd);
+        setVal('i_corte_unit', infra.corte_unit);
+        setVal('i_aterro_qtd', infra.aterro_qtd);
+        setVal('i_aterro_unit', infra.aterro_unit);
+        // Pavimentação
+        setVal('i_pav_base_qtd', infra.pav_base_qtd);
+        setVal('i_pav_base_unit', infra.pav_base_unit);
+        setVal('i_pav_asfalto_qtd', infra.pav_asfalto_qtd);
+        setVal('i_pav_asfalto_unit', infra.pav_asfalto_unit);
+        setVal('i_pav_meio_qtd', infra.pav_meio_qtd);
+        setVal('i_pav_meio_unit', infra.pav_meio_unit);
+        // Drenagem
+        setVal('i_dren_tubo_qtd', infra.dren_tubo_qtd);
+        setVal('i_dren_tubo_unit', infra.dren_tubo_unit);
+        setVal('i_dren_boca_qtd', infra.dren_boca_qtd);
+        setVal('i_dren_boca_unit', infra.dren_boca_unit);
+        // Água
+        setVal('i_agua_rede_qtd', infra.agua_rede_qtd);
+        setVal('i_agua_rede_unit', infra.agua_rede_unit);
+        setVal('i_agua_lig_qtd', infra.agua_lig_qtd);
+        setVal('i_agua_lig_unit', infra.agua_lig_unit);
+        setVal('i_agua_reserv_qtd', infra.agua_reserv_qtd);
+        setVal('i_agua_reserv_unit', infra.agua_reserv_unit);
+        // Esgoto
+        setVal('i_esg_rede_qtd', infra.esg_rede_qtd);
+        setVal('i_esg_rede_unit', infra.esg_rede_unit);
+        setVal('i_esg_lig_qtd', infra.esg_lig_qtd);
+        setVal('i_esg_lig_unit', infra.esg_lig_unit);
+        setVal('i_esg_ele_qtd', infra.esg_ele_qtd);
+        setVal('i_esg_ele_unit', infra.esg_ele_unit);
+        // Energia
+        setVal('i_energ_poste_qtd', infra.energ_poste_qtd);
+        setVal('i_energ_poste_unit', infra.energ_poste_unit);
+        setVal('i_energ_cabo_qtd', infra.energ_cabo_qtd);
+        setVal('i_energ_cabo_unit', infra.energ_cabo_unit);
+        setVal('i_energ_transf_qtd', infra.energ_transf_qtd);
+        setVal('i_energ_transf_unit', infra.energ_transf_unit);
+        // Iluminação
+        setVal('i_ilum_poste_qtd', infra.ilum_poste_qtd);
+        setVal('i_ilum_poste_unit', infra.ilum_poste_unit);
+        setVal('i_ilum_cabo_qtd', infra.ilum_cabo_qtd);
+        setVal('i_ilum_cabo_unit', infra.ilum_cabo_unit);
+        // Sinalização
+        setVal('i_sinal_vert_qtd', infra.sinal_vert_qtd);
+        setVal('i_sinal_vert_unit', infra.sinal_vert_unit);
+        setVal('i_sinal_horiz_qtd', infra.sinal_horiz_qtd);
+        setVal('i_sinal_horiz_unit', infra.sinal_horiz_unit);
+        // Projetos
+        setVal('i_proj_topo_qtd', infra.proj_topo_qtd);
+        setVal('i_proj_topo_unit', infra.proj_topo_unit);
+        setVal('i_proj_urb_qtd', infra.proj_urb_qtd);
+        setVal('i_proj_urb_unit', infra.proj_urb_unit);
+        setVal('i_proj_hidro_qtd', infra.proj_hidro_qtd);
+        setVal('i_proj_hidro_unit', infra.proj_hidro_unit);
+        setVal('i_proj_ambiental_qtd', infra.proj_ambiental_qtd);
+        setVal('i_proj_ambiental_unit', infra.proj_ambiental_unit);
+        // Diversos
+        setVal('i_div_cerca_qtd', infra.div_cerca_qtd);
+        setVal('i_div_cerca_unit', infra.div_cerca_unit);
+        setVal('i_div_port_qtd', infra.div_port_qtd);
+        setVal('i_div_port_unit', infra.div_port_unit);
+        setVal('i_div_plant_qtd', infra.div_plant_qtd);
+        setVal('i_div_plant_unit', infra.div_plant_unit);
+        setVal('i_div_guard_qtd', infra.div_guard_qtd);
+        setVal('i_div_guard_unit', infra.div_guard_unit);
+      }
+
+      // Recalcular tudo
+      setTimeout(() => {
+        inicializarMascaras();
+        calcularInfra();
+        calcular();
+        alert('✅ Dados importados com sucesso!');
+      }, 100);
+
+    } catch (error) {
+      alert('❌ Erro ao importar dados: ' + error.message);
+    }
+  };
+  reader.readAsText(file);
+
+  // Limpar input para permitir reimportar o mesmo arquivo
+  event.target.value = '';
 }
 
 // ═══════════════════════════════════════════════════════

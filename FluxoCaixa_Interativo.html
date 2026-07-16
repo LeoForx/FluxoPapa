@@ -43,6 +43,48 @@
     font-size: 14px;
   }
 
+  .btn-actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    justify-content: flex-end;
+  }
+
+  .btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-primary {
+    background: #117A65;
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background: #0f6656;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(17, 122, 101, 0.3);
+  }
+
+  .btn-secondary {
+    background: #1ABC9C;
+    color: white;
+  }
+
+  .btn-secondary:hover {
+    background: #16a085;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(26, 188, 156, 0.3);
+  }
+
   .tabs {
     display: flex;
     gap: 8px;
@@ -353,6 +395,12 @@
   <div class="header">
     <h1>💰 Fluxo de Caixa Mensal — Loteamento Papagaios</h1>
     <p>Simulação de 96 meses (8 anos) com recálculo automático • Altere os parâmetros e veja o impacto em tempo real</p>
+  </div>
+
+  <div class="btn-actions">
+    <button class="btn btn-secondary" onclick="exportarDados()">💾 Exportar Dados</button>
+    <button class="btn btn-primary" onclick="document.getElementById('importFile').click()">📂 Importar Dados</button>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importarDados(event)">
   </div>
 
   <div class="tabs">
@@ -1677,6 +1725,93 @@ function inicializarMascaras() {
     const el = document.getElementById(id);
     if (el && !el.readOnly) aplicarMascaraInteiro(el);
   });
+}
+
+// ═══════════════════════════════════════════════════════
+// EXPORTAR / IMPORTAR DADOS
+// ═══════════════════════════════════════════════════════
+
+function exportarDados() {
+  const dados = {
+    cronograma: cronograma,
+    parametros: {
+      preco: getVal('p_preco'),
+      total_lotes: getVal('p_total_lotes'),
+      perc_vista: getVal('p_perc_vista'),
+      perc_financ: getVal('p_perc_financ'),
+      prazo_financ: getVal('p_prazo_financ'),
+      perc_sinal: getVal('p_perc_sinal'),
+      tx_corretagem: getVal('p_tx_corretagem'),
+      tx_admin: getVal('p_tx_admin'),
+      tx_mkt: getVal('p_tx_mkt'),
+      tx_contingencia: getVal('p_tx_contingencia'),
+      tx_impostos: getVal('p_tx_impostos'),
+      perc_empreendedor: getVal('p_perc_empreendedor'),
+      perc_terrenista: getVal('p_perc_terrenista'),
+      capital_proprio: getVal('p_capital_proprio'),
+      tx_custo_financ: getVal('p_tx_custo_financ')
+    },
+    dataExportacao: new Date().toISOString()
+  };
+
+  const blob = new Blob([JSON.stringify(dados, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `fluxo_caixa_papagaios_${new Date().toISOString().split('T')[0]}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  alert('✅ Dados exportados com sucesso!');
+}
+
+function importarDados(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const dados = JSON.parse(e.target.result);
+
+      // Importar cronograma
+      if (dados.cronograma && dados.cronograma.length === 96) {
+        cronograma = dados.cronograma;
+      }
+
+      // Importar parâmetros
+      if (dados.parametros) {
+        setVal('p_preco', dados.parametros.preco);
+        setVal('p_total_lotes', dados.parametros.total_lotes);
+        setVal('p_perc_vista', dados.parametros.perc_vista);
+        setVal('p_perc_financ', dados.parametros.perc_financ);
+        setVal('p_prazo_financ', dados.parametros.prazo_financ);
+        setVal('p_perc_sinal', dados.parametros.perc_sinal);
+        setVal('p_tx_corretagem', dados.parametros.tx_corretagem);
+        setVal('p_tx_admin', dados.parametros.tx_admin);
+        setVal('p_tx_mkt', dados.parametros.tx_mkt);
+        setVal('p_tx_contingencia', dados.parametros.tx_contingencia);
+        setVal('p_tx_impostos', dados.parametros.tx_impostos);
+        setVal('p_perc_empreendedor', dados.parametros.perc_empreendedor);
+        setVal('p_perc_terrenista', dados.parametros.perc_terrenista);
+        setVal('p_capital_proprio', dados.parametros.capital_proprio);
+        setVal('p_tx_custo_financ', dados.parametros.tx_custo_financ);
+      }
+
+      // Salvar e recalcular
+      calcularFluxo();
+      alert('✅ Dados importados com sucesso!');
+
+    } catch (error) {
+      alert('❌ Erro ao importar dados: ' + error.message);
+    }
+  };
+  reader.readAsText(file);
+
+  // Limpar input para permitir reimportar o mesmo arquivo
+  event.target.value = '';
 }
 
 // ═══════════════════════════════════════════════════════
