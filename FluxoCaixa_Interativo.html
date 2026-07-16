@@ -141,6 +141,9 @@
     letter-spacing: 0.3px;
     border: 1px solid #0f6656;
     white-space: nowrap;
+    position: sticky;
+    top: 0;
+    z-index: 10;
   }
 
   th.right, td.right { text-align: right; }
@@ -394,8 +397,9 @@
       </div>
     </div>
 
-    <div class="table-container">
+    <div class="table-container" style="max-height:500px; overflow-y:auto;">
       <table>
+        <thead>
         <tr>
           <th style="width:20%">Indicador</th>
           <th class="right">Ano 1</th>
@@ -408,6 +412,8 @@
           <th class="right">Ano 8</th>
           <th class="right">Total 8 Anos</th>
         </tr>
+        </thead>
+        <tbody>
         <tr>
           <td>Lotes vendidos</td>
           <td class="right" id="res_ano1_lotes">0</td>
@@ -588,6 +594,7 @@
           <td class="right" id="res_ano8_acum">R$ 0</td>
           <td class="right" id="res_total_acum">R$ 0</td>
         </tr>
+        </tbody>
       </table>
     </div>
 
@@ -789,7 +796,7 @@
       <button class="btn-secondary" onclick="aplicarPadraoMkt()">📢 Aplicar Padrão de Marketing</button>
     </div>
 
-    <div class="table-container" style="max-height:600px; overflow-y:auto;">
+    <div class="table-container" style="max-height:550px; overflow-y:auto;">
       <table id="tabelaCronograma">
         <thead>
           <tr>
