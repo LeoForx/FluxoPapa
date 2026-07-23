@@ -1,0 +1,2982 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Viabilidade Loteamento Papagaios — Calculadora Interativa</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', Arial, sans-serif;
+    background: #f5f7fa;
+    color: #1a1a2e;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  .header {
+    background: linear-gradient(135deg, #1F4E79 0%, #2E75B6 100%);
+    color: white;
+    padding: 30px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  }
+
+  .header h1 {
+    font-size: 28px;
+    font-weight: 800;
+    margin-bottom: 8px;
+  }
+
+  .header p {
+    opacity: 0.9;
+    font-size: 14px;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #e0e0e0;
+    flex-wrap: wrap;
+  }
+
+  .tab {
+    padding: 12px 24px;
+    background: white;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 13px;
+    color: #555;
+    border-radius: 8px 8px 0 0;
+    transition: all 0.3s;
+    border: 2px solid transparent;
+    border-bottom: none;
+  }
+
+  .tab:hover {
+    background: #f0f7ff;
+    color: #1F4E79;
+  }
+
+  .tab.active {
+    background: white;
+    color: #1F4E79;
+    border-color: #e0e0e0;
+    border-bottom: 2px solid white;
+    margin-bottom: -2px;
+    font-weight: 700;
+  }
+
+  .tab-content {
+    display: none;
+    background: white;
+    padding: 30px;
+    border-radius: 0 12px 12px 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  }
+
+  .tab-content.active {
+    display: block;
+    animation: fadeIn 0.3s;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: #1F4E79;
+    border-left: 4px solid #2E75B6;
+    padding-left: 12px;
+    margin: 30px 0 20px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .subsection-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #2E75B6;
+    background: #f0f7ff;
+    border-left: 3px solid #2E75B6;
+    padding: 8px 12px;
+    margin: 25px 0 15px 0;
+    border-radius: 0 4px 4px 0;
+  }
+
+  .legend {
+    background: #FFF2CC;
+    border: 1px solid #F9E79F;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 12px;
+    color: #7D6608;
+  }
+
+  .table-container {
+    overflow-x: auto;
+    margin: 20px 0;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  th {
+    background: #1F4E79;
+    color: white;
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    border: 1px solid #164062;
+  }
+
+  th.right, td.right { text-align: right; }
+  th.center, td.center { text-align: center; }
+
+  td {
+    padding: 10px 12px;
+    border: 1px solid #e8ecf0;
+    background: white;
+  }
+
+  tr:nth-child(even) td {
+    background: #f9fafb;
+  }
+
+  input[type="number"], input[type="text"] {
+    width: 100%;
+    padding: 8px 10px;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.3s;
+  }
+
+  input[type="number"]:focus, input[type="text"]:focus {
+    outline: none;
+    border-color: #2E75B6;
+    background: #f0f7ff;
+  }
+
+  .input-editavel {
+    background: #FFF2CC;
+    font-weight: 700;
+  }
+
+  .input-calculado {
+    background: #D6E4F0;
+    color: #1F4E79;
+    font-weight: 700;
+    cursor: not-allowed;
+  }
+
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin: 20px 0;
+  }
+
+  .kpi-card {
+    background: linear-gradient(135deg, #f0f7ff 0%, #e6f2ff 100%);
+    border: 2px solid #c5ddf7;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s;
+  }
+
+  .kpi-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(31,78,121,0.15);
+  }
+
+  .kpi-card.verde {
+    background: linear-gradient(135deg, #eafaf1 0%, #d5f5e3 100%);
+    border-color: #a9dfbf;
+  }
+
+  .kpi-card.amarelo {
+    background: linear-gradient(135deg, #fef9e7 0%, #fcf3cf 100%);
+    border-color: #f9e79f;
+  }
+
+  .kpi-card.vermelho {
+    background: linear-gradient(135deg, #fdedec 0%, #fadbd8 100%);
+    border-color: #e6b0aa;
+  }
+
+  .kpi-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #555;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .kpi-value {
+    font-size: 24px;
+    font-weight: 800;
+    color: #1F4E79;
+    line-height: 1.2;
+  }
+
+  .kpi-value.verde { color: #196F3D; }
+  .kpi-value.vermelho { color: #C0392B; }
+
+  .kpi-sub {
+    font-size: 11px;
+    color: #777;
+    margin-top: 6px;
+  }
+
+  .alert-box {
+    background: #fef9e7;
+    border-left: 4px solid #F39C12;
+    padding: 16px 20px;
+    border-radius: 0 8px 8px 0;
+    margin: 12px 0;
+    font-size: 13px;
+    color: #7D6608;
+  }
+
+  .alert-box strong {
+    display: block;
+    margin-bottom: 6px;
+    color: #7D6608;
+  }
+
+  .success-box {
+    background: linear-gradient(135deg, #196F3D, #27AE60);
+    color: white;
+    padding: 30px;
+    border-radius: 12px;
+    text-align: center;
+    margin: 30px 0;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  }
+
+  .success-box h2 {
+    font-size: 28px;
+    font-weight: 800;
+    margin: 10px 0;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #1F4E79, #2E75B6);
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 12px rgba(31,78,121,0.3);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(31,78,121,0.4);
+  }
+
+  .btn-secondary {
+    background: white;
+    color: #1F4E79;
+    border: 2px solid #2E75B6;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-left: 10px;
+  }
+
+  .btn-secondary:hover {
+    background: #f0f7ff;
+  }
+
+  .actions {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+    z-index: 1000;
+  }
+
+  .cenario-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+    margin: 20px 0;
+  }
+
+  .cenario-card {
+    border-radius: 10px;
+    padding: 20px;
+    border: 2px solid;
+  }
+
+  .cenario-pessimista {
+    background: #FDEDEC;
+    border-color: #E74C3C;
+  }
+
+  .cenario-moderado {
+    background: #eafaf1;
+    border-color: #27AE60;
+  }
+
+  .cenario-otimista {
+    background: #EBF5FB;
+    border-color: #2980B9;
+  }
+
+  .cenario-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+
+  .cenario-pessimista .cenario-label { color: #C0392B; }
+  .cenario-moderado .cenario-label { color: #196F3D; }
+  .cenario-otimista .cenario-label { color: #1F4E79; }
+
+  .cenario-item {
+    display: flex;
+    justify-content: space-between;
+    margin: 8px 0;
+    font-size: 12px;
+  }
+
+  .cenario-item-label {
+    color: #666;
+    font-weight: 600;
+  }
+
+  .cenario-item-value {
+    font-weight: 700;
+    color: #1a1a2e;
+  }
+
+  .parceria-grid {
+    display: grid;
+    grid-template-columns: 65fr 35fr;
+    gap: 16px;
+    margin: 20px 0;
+  }
+
+  .parceria-card {
+    border-radius: 10px;
+    padding: 24px;
+    text-align: center;
+    color: white;
+  }
+
+  .parceria-emp {
+    background: linear-gradient(135deg, #1F4E79, #2E75B6);
+  }
+
+  .parceria-ter {
+    background: linear-gradient(135deg, #117A65, #1ABC9C);
+  }
+
+  .parceria-perc {
+    font-size: 48px;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  .parceria-nome {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    opacity: 0.85;
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+
+  .parceria-valor {
+    font-size: 20px;
+    font-weight: 700;
+    margin-top: 10px;
+  }
+
+  .parceria-sub {
+    font-size: 11px;
+    opacity: 0.8;
+    margin-top: 6px;
+  }
+
+  @media print {
+    .actions, .tabs { display: none; }
+    .tab-content { display: block !important; page-break-after: always; }
+    body { background: white; }
+  }
+
+  @media (max-width: 768px) {
+    .container { padding: 10px; }
+    .header { padding: 20px; }
+    .header h1 { font-size: 22px; }
+    .kpi-grid { grid-template-columns: 1fr; }
+    .parceria-grid { grid-template-columns: 1fr; }
+    .actions { bottom: 10px; right: 10px; flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <h1>🏗️ Loteamento Papagaios — Calculadora de Viabilidade Interativa</h1>
+    <p>Edite as premissas e veja todos os cálculos atualizarem em tempo real • Papagaios/MG • 16 hectares • 330 lotes</p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('painel', this)">📊 Painel Executivo</button>
+    <button class="tab" onclick="showTab('premissas', this)">⚙️ Premissas</button>
+    <button class="tab" onclick="showTab('infra', this)">🏗️ Infraestrutura</button>
+    <button class="tab" onclick="showTab('infra-terra', this)">🌍 Terraplenagem</button>
+    <button class="tab" onclick="showTab('infra-pav', this)">🛣️ Pavimentação</button>
+    <button class="tab" onclick="showTab('infra-utilidades', this)">⚙️ Utilidades</button>
+    <button class="tab" onclick="showTab('infra-projetos', this)">📐 Projetos</button>
+    <button class="tab" onclick="showTab('financeiro', this)">💰 Financeiro</button>
+    <button class="tab" onclick="showTab('cenarios', this)">📈 Cenários</button>
+  </div>
+
+  <!-- ═══════════════════ PAINEL EXECUTIVO ═══════════════════ -->
+  <div id="painel" class="tab-content active">
+
+    <div class="section-title">Resumo Executivo</div>
+
+    <div class="kpi-grid">
+      <div class="kpi-card verde">
+        <div class="kpi-label">VGV Total</div>
+        <div class="kpi-value verde" id="kpi_vgv">R$ 0</div>
+        <div class="kpi-sub"><span id="kpi_lotes">0</span> lotes × <span id="kpi_preco">R$ 0</span></div>
+      </div>
+      <div class="kpi-card verde">
+        <div class="kpi-label">Margem Bruta</div>
+        <div class="kpi-value verde" id="kpi_margem_bruta">0%</div>
+        <div class="kpi-sub">Referência: > 20%</div>
+      </div>
+      <div class="kpi-card verde">
+        <div class="kpi-label">Margem Líquida</div>
+        <div class="kpi-value verde" id="kpi_margem_liquida">0%</div>
+        <div class="kpi-sub">Referência: > 15%</div>
+      </div>
+      <div class="kpi-card verde">
+        <div class="kpi-label">Lucro Líquido</div>
+        <div class="kpi-value verde" id="kpi_lucro_liquido">R$ 0</div>
+        <div class="kpi-sub">Após impostos</div>
+      </div>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Net Empreendedor</div>
+        <div class="kpi-value" id="kpi_net_emp">R$ 0</div>
+        <div class="kpi-sub"><span id="kpi_perc_emp">65</span>% após impostos</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Net Terrenista</div>
+        <div class="kpi-value" id="kpi_net_terr">R$ 0</div>
+        <div class="kpi-sub"><span id="kpi_perc_terr">35</span>% do lucro bruto</div>
+      </div>
+      <div class="kpi-card amarelo">
+        <div class="kpi-label">Total Infraestrutura</div>
+        <div class="kpi-value" id="kpi_infra_total">R$ 0</div>
+        <div class="kpi-sub">Custo por lote: <span id="kpi_infra_lote">R$ 0</span></div>
+      </div>
+      <div class="kpi-card amarelo">
+        <div class="kpi-label">Capital Próprio</div>
+        <div class="kpi-value" id="kpi_capital">R$ 0</div>
+        <div class="kpi-sub">Payback: ~8 meses</div>
+      </div>
+    </div>
+
+    <div class="success-box">
+      <div style="font-size:48px;">✅</div>
+      <h2>RECOMENDAÇÃO: GO</h2>
+      <p style="font-size:14px; opacity:0.9; max-width:700px; margin:10px auto; line-height:1.8;">
+        Empreendimento viável para avançar. Margem bruta acima de 20%, lucro líquido positivo e
+        estrutura de parceria adequada. Principal atenção: garantir velocidade de vendas para
+        financiar infraestrutura.
+      </p>
+    </div>
+
+    <div class="section-title">⚠️ Pontos de Atenção</div>
+
+    <div class="alert-box">
+      <strong>Financiamento da infraestrutura por vendas</strong>
+      O empreendedor dispõe de capital próprio limitado, com o restante financiado pelas vendas.
+      Exige lançamento forte e estratégia comercial agressiva nos primeiros meses.
+    </div>
+
+    <div class="alert-box">
+      <strong>Velocidade de vendas sem referência recente</strong>
+      Mercado sem loteamento ativo há +1 ano. Recomenda-se pesquisa de demanda e pré-cadastro
+      antes do lançamento.
+    </div>
+
+    <div class="alert-box">
+      <strong>Regime tributário</strong>
+      Impostos estimados com base em Lucro Presumido. Validar com contador especializado antes
+      da assinatura do contrato.
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════ PREMISSAS ═══════════════════ -->
+  <div id="premissas" class="tab-content">
+
+    <div class="legend">
+      🟡 <strong>Células amarelas</strong> = editáveis (altere e pressione Enter) |
+      🔵 <strong>Células azuis</strong> = calculadas automaticamente
+    </div>
+
+    <div class="section-title">A — Dados do Terreno</div>
+    <div class="table-container">
+      <table>
+        <tr>
+          <th style="width:40%">Parâmetro</th>
+          <th style="width:20%">Valor</th>
+          <th style="width:15%">Unidade</th>
+          <th style="width:25%">Observação</th>
+        </tr>
+        <tr>
+          <td>Área bruta total</td>
+          <td><input type="text" id="p_area_ha" class="input-editavel" value="16" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcular()"></td>
+          <td>hectares</td>
+          <td>Informado pelo proprietário</td>
+        </tr>
+        <tr>
+          <td>Área bruta total (m²)</td>
+          <td><input type="text" id="p_area_m2" class="input-calculado" readonly></td>
+          <td>m²</td>
+          <td>Calculado</td>
+        </tr>
+        <tr>
+          <td>Localização</td>
+          <td colspan="3"><input type="text" id="p_localizacao" class="input-editavel" value="Papagaios/MG"></td>
+        </tr>
+        <tr>
+          <td>Tipo de loteamento</td>
+          <td colspan="3"><input type="text" id="p_tipo" class="input-editavel" value="Urbano — Popular 300m²"></td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="section-title">B — Parâmetros Urbanísticos</div>
+    <div class="table-container">
+      <table>
+        <tr>
+          <th style="width:40%">Parâmetro</th>
+          <th style="width:20%">Valor</th>
+          <th style="width:15%">Unidade</th>
+          <th style="width:25%">Observação</th>
+        </tr>
+        <tr>
+          <td>Deduções — Vias públicas (%)</td>
+          <td><input type="text" id="p_vias" class="input-editavel" value="25" onfocus="focarInput(this)" onblur="aplicarMascaraDecimal(this, 1); calcular()"></td>
+          <td>%</td>
+          <td>Confirmado pela Prefeitura</td>
+        </tr>
+        <tr>
+          <td>Deduções — Áreas verdes (%)</td>
+          <td><input type="text" id="p_verdes" class="input-editavel" value="10" onfocus="focarInput(this)" onblur="aplicarMascaraDecimal(this, 1); calcular()"></td>
+          <td>%</td>
+          <td>Mínimo legal</td>
+        </tr>
+        <tr>
+          <td>Deduções — Área institucional (%)</td>
+          <td><input type="text" id="p_institucional" class="input-editavel" value="8" onfocus="focarInput(this)" onblur="aplicarMascaraDecimal(this, 1); calcular()"></td>
+          <td>%</td>
+          <td>Confirmado pela Prefeitura</td>
+        </tr>
+        <tr>
+          <td>Total de deduções (%)</td>
+          <td><input type="text" id="p_deducoes_total" class="input-calculado" readonly></td>
+          <td>%</td>
+          <td>Calculado</td>
+        </tr>
+        <tr>
+          <td>Área líquida (%)</td>
+          <td><input type="text" id="p_liquida_perc" class="input-calculado" readonly></td>
+          <td>%</td>
+          <td>Calculado</td>
+        </tr>
+        <tr>
+          <td>Área líquida (m²)</td>
+          <td><input type="text" id="p_liquida_m2" class="input-calculado" readonly></td>
+          <td>m²</td>
+          <td>Calculado</td>
+        </tr>
+        <tr>
+          <td>Tamanho do lote (m²)</td>
+          <td><input type="text" id="p_tamanho_lote" class="input-editavel" value="300" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcular()"></td>
+          <td>m²</td>
+          <td>Mínimo definido</td>
+        </tr>
+        <tr>
+          <td>Lotes pela área (referência)</td>
+          <td><input type="text" id="p_lotes_ref" class="input-calculado" readonly></td>
+          <td>un.</td>
+          <td>Calculado — referência</td>
+        </tr>
+        <tr>
+          <td>Lotes aprovados (ajustado)</td>
+          <td><input type="text" id="p_lotes" class="input-editavel" value="300" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcular()"></td>
+          <td>un.</td>
+          <td>⚠ Use este valor</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="section-title">C — Estrutura da Parceria</div>
+    <div class="table-container">
+      <table>
+        <tr>
+          <th style="width:40%">Parâmetro</th>
+          <th style="width:20%">Valor</th>
+          <th style="width:15%">Unidade</th>
+          <th style="width:25%">Observação</th>
+        </tr>
+        <tr>
+          <td>% Empreendedor</td>
+          <td><input type="text" id="p_perc_emp" class="input-editavel" value="65" onfocus="focarInput(this)" onblur="aplicarMascaraDecimal(this, 1); calcular()"></td>
+          <td>%</td>
+          <td>Base: lucro líquido antes impostos</td>
+        </tr>
+        <tr>
+          <td>% Terrenista</td>
+          <td><input type="text" id="p_perc_terr" class="input-calculado" readonly></td>
+          <td>%</td>
+          <td>Calculado</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="section-title">D — Comercialização</div>
+    <div class="table-container">
+      <table>
+        <tr>
+          <th style="width:40%">Parâmetro</th>
+          <th style="width:20%">Valor</th>
+          <th style="width:15%">Unidade</th>
+          <th style="width:25%">Observação</th>
+        </tr>
+        <tr>
+          <td>Preço de venda por lote (R$)</td>
+          <td><input type="text" id="p_preco" class="input-editavel" value="80000" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcular()"></td>
+          <td>R$</td>
+          <td>Referência: R$ 75.000 último</td>
+        </tr>
+        <tr>
+          <td>Preço por m² (R$/m²)</td>
+          <td><input type="text" id="p_preco_m2" class="input-calculado" readonly></td>
+          <td>R$/m²</td>
+          <td>Calculado</td>
+        </tr>
+        <tr>
+          <td>VGV Total (R$)</td>
+          <td><input type="text" id="p_vgv" class="input-calculado" readonly></td>
+          <td>R$</td>
+          <td>Calculado</td>
+        </tr>
+        <tr>
+          <td>VGV Empreendedor (R$)</td>
+          <td><input type="text" id="p_vgv_emp" class="input-calculado" readonly></td>
+          <td>R$</td>
+          <td>Calculado</td>
+        </tr>
+        <tr>
+          <td>VGV Terrenista (R$)</td>
+          <td><input type="text" id="p_vgv_terr" class="input-calculado" readonly></td>
+          <td>R$</td>
+          <td>Calculado</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="section-title">E — Taxas e Percentuais</div>
+    <div class="table-container">
+      <table>
+        <tr>
+          <th style="width:40%">Parâmetro</th>
+          <th style="width:20%">Valor</th>
+          <th style="width:15%">Unidade</th>
+          <th style="width:25%">Observação</th>
+        </tr>
+        <tr>
+          <td>Corretagem (%)</td>
+          <td><input type="text" id="p_corretagem" class="input-editavel" value="6" onfocus="focarInput(this)" onblur="aplicarMascaraDecimal(this, 1); calcular()"></td>
+          <td>% VGV</td>
+          <td>Mercado: 5-8%</td>
+        </tr>
+        <tr>
+          <td>Marketing e lançamento (%)</td>
+          <td><input type="text" id="p_marketing" class="input-editavel" value="2" onfocus="focarInput(this)" onblur="aplicarMascaraDecimal(this, 1); calcular()"></td>
+          <td>% VGV</td>
+          <td>Referência: 2-3%</td>
+        </tr>
+        <tr>
+          <td>Administração (%)</td>
+          <td><input type="text" id="p_admin" class="input-editavel" value="3" onfocus="focarInput(this)" onblur="aplicarMascaraDecimal(this, 1); calcular()"></td>
+          <td>% VGV</td>
+          <td>Referência: 3-5%</td>
+        </tr>
+        <tr>
+          <td>Contingência (%)</td>
+          <td><input type="text" id="p_contingencia" class="input-editavel" value="3" onfocus="focarInput(this)" onblur="aplicarMascaraDecimal(this, 1); calcular()"></td>
+          <td>% VGV</td>
+          <td>Imprevistos 3-5%</td>
+        </tr>
+        <tr>
+          <td>Impostos — Lucro Presumido (%)</td>
+          <td><input type="text" id="p_impostos" class="input-editavel" value="6.5" onfocus="focarInput(this)" onblur="aplicarMascaraDecimal(this, 1); calcular()"></td>
+          <td>% VGV</td>
+          <td>Validar com contador</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="section-title">F — Capital e Financiamento</div>
+    <div class="table-container">
+      <table>
+        <tr>
+          <th style="width:40%">Parâmetro</th>
+          <th style="width:20%">Valor</th>
+          <th style="width:15%">Unidade</th>
+          <th style="width:25%">Observação</th>
+        </tr>
+        <tr>
+          <td>Capital próprio disponível (R$)</td>
+          <td><input type="text" id="p_capital" class="input-editavel" value="1000000" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcular()"></td>
+          <td>R$</td>
+          <td>Aporte inicial</td>
+        </tr>
+        <tr>
+          <td>Taxa financiamento capital (%)</td>
+          <td><input type="text" id="p_taxa_fin" class="input-editavel" value="1.5" onfocus="focarInput(this)" onblur="aplicarMascaraDecimal(this, 1); calcular()"></td>
+          <td>% a.m.</td>
+          <td>Custo do capital</td>
+        </tr>
+        <tr>
+          <td>% lotes à vista / banco</td>
+          <td><input type="text" id="p_vista" class="input-editavel" value="70" onfocus="focarInput(this)" onblur="aplicarMascaraDecimal(this, 1); calcular()"></td>
+          <td>%</td>
+          <td>70% recebido na venda</td>
+        </tr>
+        <tr>
+          <td>% lotes financiados (empr.)</td>
+          <td><input type="text" id="p_financiado" class="input-calculado" readonly></td>
+          <td>%</td>
+          <td>Calculado</td>
+        </tr>
+        <tr>
+          <td>Prazo financiamento (meses)</td>
+          <td><input type="text" id="p_prazo" class="input-editavel" value="120" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcular()"></td>
+          <td>meses</td>
+          <td>Até 120 meses</td>
+        </tr>
+        <tr>
+          <td>Percentual médio de sinal</td>
+          <td><input type="text" id="p_sinal" class="input-editavel" value="10" onfocus="focarInput(this)" onblur="aplicarMascaraDecimal(this, 1); calcular()"></td>
+          <td>%</td>
+          <td>Entrada paga na venda</td>
+        </tr>
+        <tr>
+          <td>Parcela por lote (R$/mês)</td>
+          <td><input type="text" id="p_parcela" class="input-calculado" readonly></td>
+          <td>R$/lote/mês</td>
+          <td>Calculado</td>
+        </tr>
+      </table>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════ INFRAESTRUTURA RESUMO ═══════════════════ -->
+  <div id="infra" class="tab-content">
+
+    <div class="section-title">Orçamento de Infraestrutura — Resumo Geral</div>
+
+    <div class="legend">
+      Use as abas específicas (Terraplenagem, Pavimentação, etc.) para editar os valores detalhados de cada categoria.
+    </div>
+
+    <!-- RESUMO TOTAL -->
+    <div class="kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); margin-bottom:30px;">
+      <div class="kpi-card amarelo">
+        <div class="kpi-label">Total Infraestrutura</div>
+        <div class="kpi-value" id="infra_resumo_total">R$ 0</div>
+        <div class="kpi-sub">Soma de todos os itens</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Custo por Lote</div>
+        <div class="kpi-value" id="infra_resumo_lote">R$ 0</div>
+        <div class="kpi-sub">Total ÷ <span id="infra_qtd_lotes">300</span> lotes</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">% do VGV</div>
+        <div class="kpi-value" id="infra_resumo_perc">0%</div>
+        <div class="kpi-sub">Relação Infra/VGV</div>
+      </div>
+    </div>
+
+    <div style="margin-top:20px; padding:16px; background:#f0f7ff; border-left:4px solid #2E75B6; border-radius:0 8px 8px 0;">
+      <strong style="color:#1F4E79;">💡 Observação:</strong>
+      <p style="margin-top:8px; font-size:13px; color:#444; line-height:1.7;">
+        Use as abas específicas (🌍 Terraplenagem, 🛣️ Pavimentação, ⚙️ Utilidades, 📐 Projetos) para editar cada item individualmente.
+        Os valores são atualizados automaticamente em tempo real.
+      </p>
+    </div>
+        <tr>
+          <td>Limpeza do terreno</td>
+          <td class="right"><input type="text" id="i_limp_qtd" class="input-editavel" value="110000" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="text-align:right;"></td>
+          <td>m²</td>
+          <td class="right"><input type="text" id="i_limp_unit" class="input-editavel" value="2.50" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularInfra()" style="text-align:right;"></td>
+          <td class="right"><span id="i_limp_total" class="kpi-value" style="font-size:13px;">R$ 0</span></td>
+          <td class="center">—</td>
+        </tr>
+        <tr>
+          <td>Corte e aterro</td>
+          <td class="right"><input type="text" id="i_corte_qtd" class="input-editavel" value="17000" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="text-align:right;"></td>
+          <td>m³</td>
+          <td class="right"><input type="text" id="i_corte_unit" class="input-editavel" value="15.00" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularInfra()" style="text-align:right;"></td>
+          <td class="right"><span id="i_corte_total" class="kpi-value" style="font-size:13px;">R$ 0</span></td>
+          <td class="center">—</td>
+        </tr>
+        <tr>
+          <td>Compactação e nivelamento</td>
+          <td class="right"><input type="text" id="i_comp_qtd" class="input-editavel" value="27000" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="text-align:right;"></td>
+          <td>m²</td>
+          <td class="right"><input type="text" id="i_comp_unit" class="input-editavel" value="8.00" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularInfra()" style="text-align:right;"></td>
+          <td class="right"><span id="i_comp_total" class="kpi-value" style="font-size:13px;">R$ 0</span></td>
+          <td class="center">—</td>
+        </tr>
+        <tr style="background:#FFF2CC; font-weight:700;">
+          <td colspan="4">SUBTOTAL TERRAPLENAGEM</td>
+          <td class="right"><span id="subtotal_terra">R$ 0</span></td>
+          <td class="center">✅</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- 2. PAVIMENTAÇÃO -->
+    <div class="section-title">2. Pavimentação</div>
+    <div class="table-container">
+      <table>
+        <tr>
+          <th style="width:35%">Item</th>
+          <th class="right" style="width:15%">Quantidade</th>
+          <th style="width:10%">Unid.</th>
+          <th class="right" style="width:15%">Custo Unit. (R$)</th>
+          <th class="right" style="width:15%">Custo Total (R$)</th>
+          <th style="width:10%">Status</th>
+        </tr>
+        <tr>
+          <td>Sub-base (brita graduada)</td>
+          <td class="right"><input type="text" id="i_subbase_qtd" class="input-editavel" value="8200" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="text-align:right;"></td>
+          <td>m³</td>
+          <td class="right"><input type="text" id="i_subbase_unit" class="input-editavel" value="85.00" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularInfra()" style="text-align:right;"></td>
+          <td class="right"><span id="i_subbase_total" class="kpi-value" style="font-size:13px;">R$ 0</span></td>
+          <td class="center">—</td>
+        </tr>
+        <tr>
+          <td>Base (brita graduada)</td>
+          <td class="right"><input type="text" id="i_base_qtd" class="input-editavel" value="5500" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="text-align:right;"></td>
+          <td>m³</td>
+          <td class="right"><input type="text" id="i_base_unit" class="input-editavel" value="95.00" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularInfra()" style="text-align:right;"></td>
+          <td class="right"><span id="i_base_total" class="kpi-value" style="font-size:13px;">R$ 0</span></td>
+          <td class="center">—</td>
+        </tr>
+        <tr>
+          <td>Pavimentação asfáltica (CBUQ)</td>
+          <td class="right"><input type="text" id="i_asfalto_qtd" class="input-editavel" value="22000" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="text-align:right;"></td>
+          <td>m²</td>
+          <td class="right"><input type="text" id="i_asfalto_unit" class="input-editavel" value="45.00" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularInfra()" style="text-align:right;"></td>
+          <td class="right"><span id="i_asfalto_total" class="kpi-value" style="font-size:13px;">R$ 0</span></td>
+          <td class="center">—</td>
+        </tr>
+        <tr>
+          <td>Meio-fio e sarjetas</td>
+          <td class="right"><input type="text" id="i_meiofio_qtd" class="input-editavel" value="4000" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="text-align:right;"></td>
+          <td>m</td>
+          <td class="right"><input type="text" id="i_meiofio_unit" class="input-editavel" value="38.00" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularInfra()" style="text-align:right;"></td>
+          <td class="right"><span id="i_meiofio_total" class="kpi-value" style="font-size:13px;">R$ 0</span></td>
+          <td class="center">—</td>
+        </tr>
+        <tr style="background:#FFF2CC; font-weight:700;">
+          <td colspan="4">SUBTOTAL PAVIMENTAÇÃO</td>
+          <td class="right"><span id="subtotal_pav">R$ 0</span></td>
+          <td class="center">✅</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- 3. DRENAGEM -->
+    <div class="section-title">3. Drenagem Pluvial</div>
+    <div class="table-container">
+      <table>
+        <tr>
+          <th style="width:35%">Item</th>
+          <th class="right" style="width:15%">Quantidade</th>
+          <th style="width:10%">Unid.</th>
+          <th class="right" style="width:15%">Custo Unit. (R$)</th>
+          <th class="right" style="width:15%">Custo Total (R$)</th>
+          <th style="width:10%">Status</th>
+        </tr>
+        <tr>
+          <td>Tubulação Ø 400mm</td>
+          <td class="right"><input type="text" id="i_dren400_qtd" class="input-editavel" value="1700" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="text-align:right;"></td>
+          <td>m</td>
+          <td class="right"><input type="text" id="i_dren400_unit" class="input-editavel" value="120.00" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularInfra()" style="text-align:right;"></td>
+          <td class="right"><span id="i_dren400_total" class="kpi-value" style="font-size:13px;">R$ 0</span></td>
+          <td class="center">—</td>
+        </tr>
+        <tr>
+          <td>Tubulação Ø 600mm</td>
+          <td class="right"><input type="text" id="i_dren600_qtd" class="input-editavel" value="850" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="text-align:right;"></td>
+          <td>m</td>
+          <td class="right"><input type="text" id="i_dren600_unit" class="input-editavel" value="180.00" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularInfra()" style="text-align:right;"></td>
+          <td class="right"><span id="i_dren600_total" class="kpi-value" style="font-size:13px;">R$ 0</span></td>
+          <td class="center">—</td>
+        </tr>
+        <tr>
+          <td>Caixas de captação (bocas de lobo)</td>
+          <td class="right"><input type="text" id="i_bocalobo_qtd" class="input-editavel" value="80" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="text-align:right;"></td>
+          <td>un.</td>
+          <td class="right"><input type="text" id="i_bocalobo_unit" class="input-editavel" value="850.00" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularInfra()" style="text-align:right;"></td>
+          <td class="right"><span id="i_bocalobo_total" class="kpi-value" style="font-size:13px;">R$ 0</span></td>
+          <td class="center">—</td>
+        </tr>
+        <tr>
+          <td>Poços de visita</td>
+          <td class="right"><input type="text" id="i_pv_qtd" class="input-editavel" value="30" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="text-align:right;"></td>
+          <td>un.</td>
+          <td class="right"><input type="text" id="i_pv_unit" class="input-editavel" value="1200.00" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularInfra()" style="text-align:right;"></td>
+          <td class="right"><span id="i_pv_total" class="kpi-value" style="font-size:13px;">R$ 0</span></td>
+          <td class="center">—</td>
+        </tr>
+        <tr style="background:#FFF2CC; font-weight:700;">
+          <td colspan="4">SUBTOTAL DRENAGEM</td>
+          <td class="right"><span id="subtotal_dren">R$ 0</span></td>
+          <td class="center">✅</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- 4. ÁGUA -->
+    <div class="section-title">4. Rede de Abastecimento de Água</div>
+    <div class="table-container">
+      <table>
+        <tr>
+          <th style="width:35%">Item</th>
+          <th class="right" style="width:15%">Quantidade</th>
+          <th style="width:10%">Unid.</th>
+          <th class="right" style="width:15%">Custo Unit. (R$)</th>
+          <th class="right" style="width:15%">Custo Total (R$)</th>
+          <th style="width:10%">Status</th>
+        </tr>
+        <tr>
+          <td>Tubulação PBA Ø 75mm</td>
+          <td class="right"><input type="text" id="i_agua75_qtd" class="input-editavel" value="2400" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="text-align:right;"></td>
+          <td>m</td>
+          <td class="right"><input type="text" id="i_agua75_unit" class="input-editavel" value="65.00" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularInfra()" style="text-align:right;"></td>
+          <td class="right"><span id="i_agua75_total" class="kpi-value" style="font-size:13px;">R$ 0</span></td>
+          <td class="center">—</td>
+        </tr>
+        <tr>
+          <td>Tubulação PBA Ø 110mm</td>
+          <td class="right"><input type="text" id="i_agua110_qtd" class="input-editavel" value="1200" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="text-align:right;"></td>
+          <td>m</td>
+          <td class="right"><input type="text" id="i_agua110_unit" class="input-editavel" value="85.00" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularInfra()" style="text-align:right;"></td>
+          <td class="right"><span id="i_agua110_total" class="kpi-value" style="font-size:13px;">R$ 0</span></td>
+          <td class="center">—</td>
+        </tr>
+        <tr>
+          <td>Cavaletes e hidrômetros</td>
+          <td class="right"><input type="text" id="i_hidro_qtd" class="input-editavel" value="300" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="text-align:right;"></td>
+          <td>un.</td>
+          <td class="right"><input type="text" id="i_hidro_unit" class="input-editavel" value="420.00" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularInfra()" style="text-align:right;"></td>
+          <td class="right"><span id="i_hidro_total" class="kpi-value" style="font-size:13px;">R$ 0</span></td>
+          <td class="center">—</td>
+        </tr>
+        <tr>
+          <td>Reservatório elevado</td>
+          <td class="right"><input type="text" id="i_reserv_qtd" class="input-editavel" value="1" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="text-align:right;"></td>
+          <td>un.</td>
+          <td class="right"><input type="text" id="i_reserv_unit" class="input-editavel" value="50000.00" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularInfra()" style="text-align:right;"></td>
+          <td class="right"><span id="i_reserv_total" class="kpi-value" style="font-size:13px;">R$ 0</span></td>
+          <td class="center">—</td>
+        </tr>
+        <tr style="background:#FFF2CC; font-weight:700;">
+          <td colspan="4">SUBTOTAL ÁGUA</td>
+          <td class="right"><span id="subtotal_agua">R$ 0</span></td>
+          <td class="center">✅</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- 5. ESGOTO -->
+    <div class="section-title">5. Rede de Esgotamento Sanitário</div>
+    <div class="table-container">
+      <table>
+        <tr>
+          <th style="width:35%">Item</th>
+          <th class="right" style="width:15%">Quantidade</th>
+          <th style="width:10%">Unid.</th>
+          <th class="right" style="width:15%">Custo Unit. (R$)</th>
+          <th class="right" style="width:15%">Custo Total (R$)</th>
+          <th style="width:10%">Status</th>
+        </tr>
+        <tr>
+          <td>Tubulação PVC Ø 150mm</td>
+          <td class="right"><input type="text" id="i_esg150_qtd" class="input-editavel" value="2700" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="text-align:right;"></td>
+          <td>m</td>
+          <td class="right"><input type="text" id="i_esg150_unit" class="input-editavel" value="75.00" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularInfra()" style="text-align:right;"></td>
+          <td class="right"><span id="i_esg150_total" class="kpi-value" style="font-size:13px;">R$ 0</span></td>
+          <td class="center">—</td>
+        </tr>
+        <tr>
+          <td>Tubulação PVC Ø 200mm</td>
+          <td class="right"><input type="text" id="i_esg200_qtd" class="input-editavel" value="1200" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="text-align:right;"></td>
+          <td>m</td>
+          <td class="right"><input type="text" id="i_esg200_unit" class="input-editavel" value="95.00" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularInfra()" style="text-align:right;"></td>
+          <td class="right"><span id="i_esg200_total" class="kpi-value" style="font-size:13px;">R$ 0</span></td>
+          <td class="center">—</td>
+        </tr>
+        <tr>
+          <td>Poços de visita (PV)</td>
+          <td class="right"><input type="text" id="i_pvesg_qtd" class="input-editavel" value="40" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="text-align:right;"></td>
+          <td>un.</td>
+          <td class="right"><input type="text" id="i_pvesg_unit" class="input-editavel" value="1100.00" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularInfra()" style="text-align:right;"></td>
+          <td class="right"><span id="i_pvesg_total" class="kpi-value" style="font-size:13px;">R$ 0</span></td>
+          <td class="center">—</td>
+        </tr>
+        <tr>
+          <td>Estação elevatória (ETE)</td>
+          <td class="right"><input type="text" id="i_ete_qtd" class="input-editavel" value="1" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="text-align:right;"></td>
+          <td>un.</td>
+          <td class="right"><input type="text" id="i_ete_unit" class="input-editavel" value="100000.00" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularInfra()" style="text-align:right;"></td>
+          <td class="right"><span id="i_ete_total" class="kpi-value" style="font-size:13px;">R$ 0</span></td>
+          <td class="center">—</td>
+        </tr>
+        <tr style="background:#FFF2CC; font-weight:700;">
+          <td colspan="4">SUBTOTAL ESGOTO</td>
+          <td class="right"><span id="subtotal_esg">R$ 0</span></td>
+          <td class="center">✅</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- 6. ENERGIA ELÉTRICA -->
+    <div class="section-title">6. Rede de Energia Elétrica</div>
+    <div class="table-container">
+      <table>
+        <tr>
+          <th style="width:35%">Item</th>
+          <th class="right" style="width:15%">Quantidade</th>
+          <th style="width:10%">Unid.</th>
+          <th class="right" style="width:15%">Custo Unit. (R$)</th>
+          <th class="right" style="width:15%">Custo Total (R$)</th>
+          <th style="width:10%">Status</th>
+        </tr>
+        <tr>
+          <td>Postes de concreto</td>
+          <td class="right"><input type="text" id="i_poste_qtd" class="input-editavel" value="90" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="text-align:right;"></td>
+          <td>un.</td>
+          <td class="right"><input type="text" id="i_poste_unit" class="input-editavel" value="850.00" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularInfra()" style="text-align:right;"></td>
+          <td class="right"><span id="i_poste_total" class="kpi-value" style="font-size:13px;">R$ 0</span></td>
+          <td class="center">—</td>
+        </tr>
+        <tr>
+          <td>Rede primária e secundária</td>
+          <td class="right"><input type="text" id="i_rede_qtd" class="input-editavel" value="5500" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="text-align:right;"></td>
+          <td>m</td>
+          <td class="right"><input type="text" id="i_rede_unit" class="input-editavel" value="45.00" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularInfra()" style="text-align:right;"></td>
+          <td class="right"><span id="i_rede_total" class="kpi-value" style="font-size:13px;">R$ 0</span></td>
+          <td class="center">—</td>
+        </tr>
+        <tr>
+          <td>Transformadores</td>
+          <td class="right"><input type="text" id="i_transf_qtd" class="input-editavel" value="3" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="text-align:right;"></td>
+          <td>un.</td>
+          <td class="right"><input type="text" id="i_transf_unit" class="input-editavel" value="28000.00" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularInfra()" style="text-align:right;"></td>
+          <td class="right"><span id="i_transf_total" class="kpi-value" style="font-size:13px;">R$ 0</span></td>
+          <td class="center">—</td>
+        </tr>
+        <tr>
+          <td>Entrada de energia (padrões)</td>
+          <td class="right"><input type="text" id="i_padrao_qtd" class="input-editavel" value="300" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="text-align:right;"></td>
+          <td>un.</td>
+          <td class="right"><input type="text" id="i_padrao_unit" class="input-editavel" value="750.00" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularInfra()" style="text-align:right;"></td>
+          <td class="right"><span id="i_padrao_total" class="kpi-value" style="font-size:13px;">R$ 0</span></td>
+          <td class="center">—</td>
+        </tr>
+        <tr style="background:#FFF2CC; font-weight:700;">
+          <td colspan="4">SUBTOTAL ENERGIA</td>
+          <td class="right"><span id="subtotal_energia">R$ 0</span></td>
+          <td class="center">✅</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- 7. ILUMINAÇÃO PÚBLICA -->
+    <div class="section-title">7. Iluminação Pública</div>
+    <div class="table-container">
+      <table>
+        <tr>
+          <th style="width:35%">Item</th>
+          <th class="right" style="width:15%">Quantidade</th>
+          <th style="width:10%">Unid.</th>
+          <th class="right" style="width:15%">Custo Unit. (R$)</th>
+          <th class="right" style="width:15%">Custo Total (R$)</th>
+          <th style="width:10%">Status</th>
+        </tr>
+        <tr>
+          <td>Luminárias LED + braços</td>
+          <td class="right"><input type="text" id="i_lum_qtd" class="input-editavel" value="90" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="text-align:right;"></td>
+          <td>un.</td>
+          <td class="right"><input type="text" id="i_lum_unit" class="input-editavel" value="1200.00" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularInfra()" style="text-align:right;"></td>
+          <td class="right"><span id="i_lum_total" class="kpi-value" style="font-size:13px;">R$ 0</span></td>
+          <td class="center">—</td>
+        </tr>
+        <tr>
+          <td>Quadro de comando fotocélula</td>
+          <td class="right"><input type="text" id="i_quadro_qtd" class="input-editavel" value="3" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="text-align:right;"></td>
+          <td>un.</td>
+          <td class="right"><input type="text" id="i_quadro_unit" class="input-editavel" value="3500.00" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularInfra()" style="text-align:right;"></td>
+          <td class="right"><span id="i_quadro_total" class="kpi-value" style="font-size:13px;">R$ 0</span></td>
+          <td class="center">—</td>
+        </tr>
+        <tr style="background:#FFF2CC; font-weight:700;">
+          <td colspan="4">SUBTOTAL ILUMINAÇÃO</td>
+          <td class="right"><span id="subtotal_ilum">R$ 0</span></td>
+          <td class="center">✅</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- 8. SINALIZAÇÃO E ACESSIBILIDADE -->
+    <div class="section-title">8. Sinalização e Acessibilidade</div>
+    <div class="table-container">
+      <table>
+        <tr>
+          <th style="width:35%">Item</th>
+          <th class="right" style="width:15%">Quantidade</th>
+          <th style="width:10%">Unid.</th>
+          <th class="right" style="width:15%">Custo Unit. (R$)</th>
+          <th class="right" style="width:15%">Custo Total (R$)</th>
+          <th style="width:10%">Status</th>
+        </tr>
+        <tr>
+          <td>Placas de sinalização</td>
+          <td class="right"><input type="text" id="i_placas_qtd" class="input-editavel" value="40" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="text-align:right;"></td>
+          <td>un.</td>
+          <td class="right"><input type="text" id="i_placas_unit" class="input-editavel" value="350.00" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularInfra()" style="text-align:right;"></td>
+          <td class="right"><span id="i_placas_total" class="kpi-value" style="font-size:13px;">R$ 0</span></td>
+          <td class="center">—</td>
+        </tr>
+        <tr>
+          <td>Pintura de solo (faixas)</td>
+          <td class="right"><input type="text" id="i_pintura_qtd" class="input-editavel" value="800" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="text-align:right;"></td>
+          <td>m²</td>
+          <td class="right"><input type="text" id="i_pintura_unit" class="input-editavel" value="25.00" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularInfra()" style="text-align:right;"></td>
+          <td class="right"><span id="i_pintura_total" class="kpi-value" style="font-size:13px;">R$ 0</span></td>
+          <td class="center">—</td>
+        </tr>
+        <tr>
+          <td>Calçadas e rampas acessíveis</td>
+          <td class="right"><input type="text" id="i_calcada_qtd" class="input-editavel" value="4000" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="text-align:right;"></td>
+          <td>m²</td>
+          <td class="right"><input type="text" id="i_calcada_unit" class="input-editavel" value="65.00" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularInfra()" style="text-align:right;"></td>
+          <td class="right"><span id="i_calcada_total" class="kpi-value" style="font-size:13px;">R$ 0</span></td>
+          <td class="center">—</td>
+        </tr>
+        <tr style="background:#FFF2CC; font-weight:700;">
+          <td colspan="4">SUBTOTAL SINALIZAÇÃO</td>
+          <td class="right"><span id="subtotal_sinal">R$ 0</span></td>
+          <td class="center">✅</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- 9. PROJETOS E LICENCIAMENTO -->
+    <div class="section-title">9. Projetos e Licenciamento</div>
+    <div class="table-container">
+      <table>
+        <tr>
+          <th style="width:35%">Item</th>
+          <th class="right" style="width:15%">Quantidade</th>
+          <th style="width:10%">Unid.</th>
+          <th class="right" style="width:15%">Custo Unit. (R$)</th>
+          <th class="right" style="width:15%">Custo Total (R$)</th>
+          <th style="width:10%">Status</th>
+        </tr>
+        <tr>
+          <td>Projeto urbanístico completo</td>
+          <td class="right"><input type="text" id="i_proj_urb_qtd" class="input-editavel" value="1" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="text-align:right;"></td>
+          <td>un.</td>
+          <td class="right"><input type="text" id="i_proj_urb_unit" class="input-editavel" value="45000.00" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularInfra()" style="text-align:right;"></td>
+          <td class="right"><span id="i_proj_urb_total" class="kpi-value" style="font-size:13px;">R$ 0</span></td>
+          <td class="center">—</td>
+        </tr>
+        <tr>
+          <td>Projetos de infraestrutura</td>
+          <td class="right"><input type="text" id="i_proj_infra_qtd" class="input-editavel" value="1" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="text-align:right;"></td>
+          <td>un.</td>
+          <td class="right"><input type="text" id="i_proj_infra_unit" class="input-editavel" value="65000.00" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularInfra()" style="text-align:right;"></td>
+          <td class="right"><span id="i_proj_infra_total" class="kpi-value" style="font-size:13px;">R$ 0</span></td>
+          <td class="center">—</td>
+        </tr>
+        <tr>
+          <td>Licenças e aprovações</td>
+          <td class="right"><input type="text" id="i_lic_qtd" class="input-editavel" value="1" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="text-align:right;"></td>
+          <td>un.</td>
+          <td class="right"><input type="text" id="i_lic_unit" class="input-editavel" value="28000.00" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularInfra()" style="text-align:right;"></td>
+          <td class="right"><span id="i_lic_total" class="kpi-value" style="font-size:13px;">R$ 0</span></td>
+          <td class="center">—</td>
+        </tr>
+        <tr>
+          <td>Topografia e geotecnia</td>
+          <td class="right"><input type="text" id="i_topo_qtd" class="input-editavel" value="1" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="text-align:right;"></td>
+          <td>un.</td>
+          <td class="right"><input type="text" id="i_topo_unit" class="input-editavel" value="22000.00" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularInfra()" style="text-align:right;"></td>
+          <td class="right"><span id="i_topo_total" class="kpi-value" style="font-size:13px;">R$ 0</span></td>
+          <td class="center">—</td>
+        </tr>
+        <tr style="background:#FFF2CC; font-weight:700;">
+          <td colspan="4">SUBTOTAL PROJETOS</td>
+          <td class="right"><span id="subtotal_proj">R$ 0</span></td>
+          <td class="center">✅</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- 10. DIVERSOS -->
+    <div class="section-title">10. Diversos e Imprevistos</div>
+    <div class="table-container">
+      <table>
+        <tr>
+          <th style="width:35%">Item</th>
+          <th class="right" style="width:15%">Quantidade</th>
+          <th style="width:10%">Unid.</th>
+          <th class="right" style="width:15%">Custo Unit. (R$)</th>
+          <th class="right" style="width:15%">Custo Total (R$)</th>
+          <th style="width:10%">Status</th>
+        </tr>
+        <tr>
+          <td>Portaria e guarita</td>
+          <td class="right"><input type="text" id="i_portaria_qtd" class="input-editavel" value="1" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="text-align:right;"></td>
+          <td>un.</td>
+          <td class="right"><input type="text" id="i_portaria_unit" class="input-editavel" value="45000.00" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularInfra()" style="text-align:right;"></td>
+          <td class="right"><span id="i_portaria_total" class="kpi-value" style="font-size:13px;">R$ 0</span></td>
+          <td class="center">—</td>
+        </tr>
+        <tr>
+          <td>Paisagismo (áreas verdes)</td>
+          <td class="right"><input type="text" id="i_paisag_qtd" class="input-editavel" value="16000" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="text-align:right;"></td>
+          <td>m²</td>
+          <td class="right"><input type="text" id="i_paisag_unit" class="input-editavel" value="8.50" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularInfra()" style="text-align:right;"></td>
+          <td class="right"><span id="i_paisag_total" class="kpi-value" style="font-size:13px;">R$ 0</span></td>
+          <td class="center">—</td>
+        </tr>
+        <tr>
+          <td>Cercamento e muros</td>
+          <td class="right"><input type="text" id="i_cerca_qtd" class="input-editavel" value="800" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="text-align:right;"></td>
+          <td>m</td>
+          <td class="right"><input type="text" id="i_cerca_unit" class="input-editavel" value="180.00" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularInfra()" style="text-align:right;"></td>
+          <td class="right"><span id="i_cerca_total" class="kpi-value" style="font-size:13px;">R$ 0</span></td>
+          <td class="center">—</td>
+        </tr>
+        <tr>
+          <td>Imprevistos</td>
+          <td class="right"><input type="text" id="i_imprev_qtd" class="input-editavel" value="1" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="text-align:right;"></td>
+          <td>vb</td>
+          <td class="right"><input type="text" id="i_imprev_unit" class="input-editavel" value="6500.00" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularInfra()" style="text-align:right;"></td>
+          <td class="right"><span id="i_imprev_total" class="kpi-value" style="font-size:13px;">R$ 0</span></td>
+          <td class="center">—</td>
+        </tr>
+        <tr style="background:#FFF2CC; font-weight:700;">
+          <td colspan="4">SUBTOTAL DIVERSOS</td>
+          <td class="right"><span id="subtotal_div">R$ 0</span></td>
+          <td class="center">✅</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- TOTAL GERAL -->
+    <div class="section-title">CONSOLIDAÇÃO — TOTAL GERAL</div>
+    <div class="table-container">
+      <table>
+        <tr style="background:#1F4E79; color:white; font-weight:700;">
+          <th style="width:70%">Categoria</th>
+          <th class="right" style="width:20%">Valor (R$)</th>
+          <th class="right" style="width:10%">% do Total</th>
+        </tr>
+        <tr>
+          <td>1. Terraplenagem</td>
+          <td class="right"><span id="cons_terra">R$ 0</span></td>
+          <td class="right"><span id="cons_terra_perc">0%</span></td>
+        </tr>
+        <tr>
+          <td>2. Pavimentação</td>
+          <td class="right"><span id="cons_pav">R$ 0</span></td>
+          <td class="right"><span id="cons_pav_perc">0%</span></td>
+        </tr>
+        <tr>
+          <td>3. Drenagem</td>
+          <td class="right"><span id="cons_dren">R$ 0</span></td>
+          <td class="right"><span id="cons_dren_perc">0%</span></td>
+        </tr>
+        <tr>
+          <td>4. Água</td>
+          <td class="right"><span id="cons_agua">R$ 0</span></td>
+          <td class="right"><span id="cons_agua_perc">0%</span></td>
+        </tr>
+        <tr>
+          <td>5. Esgoto</td>
+          <td class="right"><span id="cons_esg">R$ 0</span></td>
+          <td class="right"><span id="cons_esg_perc">0%</span></td>
+        </tr>
+        <tr>
+          <td>6. Energia</td>
+          <td class="right"><span id="cons_energia">R$ 0</span></td>
+          <td class="right"><span id="cons_energia_perc">0%</span></td>
+        </tr>
+        <tr>
+          <td>7. Iluminação</td>
+          <td class="right"><span id="cons_ilum">R$ 0</span></td>
+          <td class="right"><span id="cons_ilum_perc">0%</span></td>
+        </tr>
+        <tr>
+          <td>8. Sinalização</td>
+          <td class="right"><span id="cons_sinal">R$ 0</span></td>
+          <td class="right"><span id="cons_sinal_perc">0%</span></td>
+        </tr>
+        <tr>
+          <td>9. Projetos</td>
+          <td class="right"><span id="cons_proj">R$ 0</span></td>
+          <td class="right"><span id="cons_proj_perc">0%</span></td>
+        </tr>
+        <tr>
+          <td>10. Diversos</td>
+          <td class="right"><span id="cons_div">R$ 0</span></td>
+          <td class="right"><span id="cons_div_perc">0%</span></td>
+        </tr>
+        <tr style="background:#D5F5E3; font-weight:700; font-size:15px;">
+          <td><strong>TOTAL INFRAESTRUTURA</strong></td>
+          <td class="right"><strong><span id="cons_total">R$ 0</span></strong></td>
+          <td class="right"><strong>100%</strong></td>
+        </tr>
+      </table>
+    </div>
+
+    <div style="margin-top:20px; padding:16px; background:#f0f7ff; border-left:4px solid #2E75B6; border-radius:0 8px 8px 0;">
+      <strong style="color:#1F4E79;">💡 Observação:</strong>
+      <p style="margin-top:8px; font-size:13px; color:#444; line-height:1.7;">
+        Use as abas específicas (🌍 Terraplenagem, 🛣️ Pavimentação, ⚙️ Utilidades, 📐 Projetos) para editar cada item individualmente.
+        Os valores são atualizados automaticamente em tempo real.
+      </p>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════ TERRAPLENAGEM ═══════════════════ -->
+  <div id="infra-terra" class="tab-content">
+    <div class="section-title">🌍 Terraplenagem e Movimentação de Terra</div>
+
+    <div class="legend">
+      🟡 <strong>Editável:</strong> Quantidade e Custo Unitário • 🔵 <strong>Calculado:</strong> Custo Total
+    </div>
+
+    <div class="table-container">
+      <table>
+        <tr>
+          <th style="width:35%">Item</th>
+          <th class="right" style="width:15%">Quantidade</th>
+          <th style="width:10%">Unid.</th>
+          <th class="right" style="width:15%">Custo Unit. (R$)</th>
+          <th class="right" style="width:15%">Custo Total (R$)</th>
+          <th style="width:10%">Status</th>
+        </tr>
+        <tr>
+          <td>Limpeza do terreno</td>
+          <td class="right"><input type="text" id="i_limp_qtd" class="input-editavel" value="110000" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="text-align:right;"></td>
+          <td>m²</td>
+          <td class="right"><input type="text" id="i_limp_unit" class="input-editavel" value="2.50" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularInfra()" style="text-align:right;"></td>
+          <td class="right"><span id="i_limp_total" class="kpi-value" style="font-size:13px;">R$ 0</span></td>
+          <td class="center">—</td>
+        </tr>
+        <tr>
+          <td>Corte e aterro</td>
+          <td class="right"><input type="text" id="i_corte_qtd" class="input-editavel" value="17000" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="text-align:right;"></td>
+          <td>m³</td>
+          <td class="right"><input type="text" id="i_corte_unit" class="input-editavel" value="15.00" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularInfra()" style="text-align:right;"></td>
+          <td class="right"><span id="i_corte_total" class="kpi-value" style="font-size:13px;">R$ 0</span></td>
+          <td class="center">—</td>
+        </tr>
+        <tr>
+          <td>Compactação e nivelamento</td>
+          <td class="right"><input type="text" id="i_comp_qtd" class="input-editavel" value="27000" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="text-align:right;"></td>
+          <td>m²</td>
+          <td class="right"><input type="text" id="i_comp_unit" class="input-editavel" value="8.00" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularInfra()" style="text-align:right;"></td>
+          <td class="right"><span id="i_comp_total" class="kpi-value" style="font-size:13px;">R$ 0</span></td>
+          <td class="center">—</td>
+        </tr>
+        <tr style="background:#D5F5E3; font-weight:700; font-size:15px;">
+          <td colspan="4"><strong>TOTAL TERRAPLENAGEM</strong></td>
+          <td class="right"><strong><span id="subtotal_terra">R$ 0</span></strong></td>
+          <td class="center">✅</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ PAVIMENTAÇÃO ═══════════════════ -->
+  <div id="infra-pav" class="tab-content">
+    <div class="section-title">🛣️ Pavimentação e Drenagem</div>
+
+    <div class="legend">
+      🟡 <strong>Editável:</strong> Quantidade e Custo Unitário • 🔵 <strong>Calculado:</strong> Custo Total
+    </div>
+
+    <!-- Pavimentação -->
+    <div class="section-title" style="font-size:16px; margin-top:20px;">Pavimentação</div>
+    <div class="table-container">
+      <table>
+        <tr>
+          <th style="width:35%">Item</th>
+          <th class="right" style="width:15%">Quantidade</th>
+          <th style="width:10%">Unid.</th>
+          <th class="right" style="width:15%">Custo Unit. (R$)</th>
+          <th class="right" style="width:15%">Custo Total (R$)</th>
+          <th style="width:10%">Status</th>
+        </tr>
+        <tr>
+          <td>Sub-base (brita graduada)</td>
+          <td class="right"><input type="text" id="i_subbase_qtd" class="input-editavel" value="8200" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="text-align:right;"></td>
+          <td>m³</td>
+          <td class="right"><input type="text" id="i_subbase_unit" class="input-editavel" value="85.00" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularInfra()" style="text-align:right;"></td>
+          <td class="right"><span id="i_subbase_total" class="kpi-value" style="font-size:13px;">R$ 0</span></td>
+          <td class="center">—</td>
+        </tr>
+        <tr>
+          <td>Base (brita graduada)</td>
+          <td class="right"><input type="text" id="i_base_qtd" class="input-editavel" value="5500" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="text-align:right;"></td>
+          <td>m³</td>
+          <td class="right"><input type="text" id="i_base_unit" class="input-editavel" value="95.00" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularInfra()" style="text-align:right;"></td>
+          <td class="right"><span id="i_base_total" class="kpi-value" style="font-size:13px;">R$ 0</span></td>
+          <td class="center">—</td>
+        </tr>
+        <tr>
+          <td>Pavimentação asfáltica (CBUQ)</td>
+          <td class="right"><input type="text" id="i_asfalto_qtd" class="input-editavel" value="22000" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="text-align:right;"></td>
+          <td>m²</td>
+          <td class="right"><input type="text" id="i_asfalto_unit" class="input-editavel" value="45.00" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularInfra()" style="text-align:right;"></td>
+          <td class="right"><span id="i_asfalto_total" class="kpi-value" style="font-size:13px;">R$ 0</span></td>
+          <td class="center">—</td>
+        </tr>
+        <tr>
+          <td>Meio-fio e sarjetas</td>
+          <td class="right"><input type="text" id="i_meiofio_qtd" class="input-editavel" value="4000" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="text-align:right;"></td>
+          <td>m</td>
+          <td class="right"><input type="text" id="i_meiofio_unit" class="input-editavel" value="38.00" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularInfra()" style="text-align:right;"></td>
+          <td class="right"><span id="i_meiofio_total" class="kpi-value" style="font-size:13px;">R$ 0</span></td>
+          <td class="center">—</td>
+        </tr>
+        <tr style="background:#FFF2CC; font-weight:700;">
+          <td colspan="4">SUBTOTAL PAVIMENTAÇÃO</td>
+          <td class="right"><span id="subtotal_pav">R$ 0</span></td>
+          <td class="center">✅</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Drenagem -->
+    <div class="section-title" style="font-size:16px; margin-top:30px;">Drenagem Pluvial</div>
+    <div class="table-container">
+      <table>
+        <tr>
+          <th style="width:35%">Item</th>
+          <th class="right" style="width:15%">Quantidade</th>
+          <th style="width:10%">Unid.</th>
+          <th class="right" style="width:15%">Custo Unit. (R$)</th>
+          <th class="right" style="width:15%">Custo Total (R$)</th>
+          <th style="width:10%">Status</th>
+        </tr>
+        <tr>
+          <td>Tubulação Ø 400mm</td>
+          <td class="right"><input type="text" id="i_dren400_qtd" class="input-editavel" value="1700" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="text-align:right;"></td>
+          <td>m</td>
+          <td class="right"><input type="text" id="i_dren400_unit" class="input-editavel" value="120.00" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularInfra()" style="text-align:right;"></td>
+          <td class="right"><span id="i_dren400_total" class="kpi-value" style="font-size:13px;">R$ 0</span></td>
+          <td class="center">—</td>
+        </tr>
+        <tr>
+          <td>Tubulação Ø 600mm</td>
+          <td class="right"><input type="text" id="i_dren600_qtd" class="input-editavel" value="850" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="text-align:right;"></td>
+          <td>m</td>
+          <td class="right"><input type="text" id="i_dren600_unit" class="input-editavel" value="180.00" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularInfra()" style="text-align:right;"></td>
+          <td class="right"><span id="i_dren600_total" class="kpi-value" style="font-size:13px;">R$ 0</span></td>
+          <td class="center">—</td>
+        </tr>
+        <tr>
+          <td>Caixas de captação (bocas de lobo)</td>
+          <td class="right"><input type="text" id="i_bocalobo_qtd" class="input-editavel" value="80" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="text-align:right;"></td>
+          <td>un.</td>
+          <td class="right"><input type="text" id="i_bocalobo_unit" class="input-editavel" value="850.00" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularInfra()" style="text-align:right;"></td>
+          <td class="right"><span id="i_bocalobo_total" class="kpi-value" style="font-size:13px;">R$ 0</span></td>
+          <td class="center">—</td>
+        </tr>
+        <tr>
+          <td>Poços de visita</td>
+          <td class="right"><input type="text" id="i_pv_qtd" class="input-editavel" value="30" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="text-align:right;"></td>
+          <td>un.</td>
+          <td class="right"><input type="text" id="i_pv_unit" class="input-editavel" value="1200.00" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularInfra()" style="text-align:right;"></td>
+          <td class="right"><span id="i_pv_total" class="kpi-value" style="font-size:13px;">R$ 0</span></td>
+          <td class="center">—</td>
+        </tr>
+        <tr style="background:#FFF2CC; font-weight:700;">
+          <td colspan="4">SUBTOTAL DRENAGEM</td>
+          <td class="right"><span id="subtotal_dren">R$ 0</span></td>
+          <td class="center">✅</td>
+        </tr>
+      </table>
+    </div>
+
+    <div style="margin-top:30px; background:#D5F5E3; padding:20px; border-radius:8px;">
+      <div style="font-size:18px; font-weight:800; color:#196F3D; margin-bottom:10px;">TOTAL PAVIMENTAÇÃO + DRENAGEM</div>
+      <div style="font-size:24px; font-weight:800; color:#196F3D;"><span id="total_pav_dren">R$ 0</span></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ UTILIDADES ═══════════════════ -->
+  <div id="infra-utilidades" class="tab-content">
+    <div class="section-title">⚙️ Utilidades (Água, Esgoto, Energia, Iluminação, Sinalização)</div>
+
+    <div class="legend">
+      🟡 <strong>Editável:</strong> Quantidade e Custo Unitário • 🔵 <strong>Calculado:</strong> Custo Total
+    </div>
+
+    <!-- ÁGUA -->
+    <div class="subsection-title">💧 Sistema de Água</div>
+    <div class="table-container">
+      <table>
+        <tr>
+          <th style="width:40%">Item</th>
+          <th class="right" style="width:15%">Qtd</th>
+          <th style="width:10%">Un.</th>
+          <th class="right" style="width:15%">Custo Unit. (R$)</th>
+          <th class="right" style="width:20%">Custo Total (R$)</th>
+        </tr>
+        <tr>
+          <td>Rede Água Ø75mm</td>
+          <td class="right"><input type="text" id="i_agua75_qtd" class="input-editavel" value="1200" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="width:90px;"></td>
+          <td>m</td>
+          <td class="right"><input type="text" id="i_agua75_unit" class="input-editavel" value="85,00" onfocus="focarInput(this)" onblur="aplicarMascaraDecimal(this); calcularInfra()" style="width:90px;"></td>
+          <td class="right computed" id="i_agua75_total">R$ 0</td>
+        </tr>
+        <tr>
+          <td>Rede Água Ø110mm</td>
+          <td class="right"><input type="text" id="i_agua110_qtd" class="input-editavel" value="800" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="width:90px;"></td>
+          <td>m</td>
+          <td class="right"><input type="text" id="i_agua110_unit" class="input-editavel" value="120,00" onfocus="focarInput(this)" onblur="aplicarMascaraDecimal(this); calcularInfra()" style="width:90px;"></td>
+          <td class="right computed" id="i_agua110_total">R$ 0</td>
+        </tr>
+        <tr>
+          <td>Hidrantes</td>
+          <td class="right"><input type="text" id="i_hidro_qtd" class="input-editavel" value="20" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="width:90px;"></td>
+          <td>un</td>
+          <td class="right"><input type="text" id="i_hidro_unit" class="input-editavel" value="2.500,00" onfocus="focarInput(this)" onblur="aplicarMascaraDecimal(this); calcularInfra()" style="width:90px;"></td>
+          <td class="right computed" id="i_hidro_total">R$ 0</td>
+        </tr>
+        <tr>
+          <td>Reservatório elevado</td>
+          <td class="right"><input type="text" id="i_reserv_qtd" class="input-editavel" value="1" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="width:90px;"></td>
+          <td>un</td>
+          <td class="right"><input type="text" id="i_reserv_unit" class="input-editavel" value="50.000,00" onfocus="focarInput(this)" onblur="aplicarMascaraDecimal(this); calcularInfra()" style="width:90px;"></td>
+          <td class="right computed" id="i_reserv_total">R$ 0</td>
+        </tr>
+        <tr class="subtotal-row">
+          <td colspan="4" class="right"><strong>Subtotal Água</strong></td>
+          <td class="right computed" id="subtotal_agua"><strong>R$ 0</strong></td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- ESGOTO -->
+    <div class="subsection-title">🚰 Sistema de Esgoto</div>
+    <div class="table-container">
+      <table>
+        <tr>
+          <th style="width:40%">Item</th>
+          <th class="right" style="width:15%">Qtd</th>
+          <th style="width:10%">Un.</th>
+          <th class="right" style="width:15%">Custo Unit. (R$)</th>
+          <th class="right" style="width:20%">Custo Total (R$)</th>
+        </tr>
+        <tr>
+          <td>Coletor Esgoto Ø150mm</td>
+          <td class="right"><input type="text" id="i_esg150_qtd" class="input-editavel" value="1500" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="width:90px;"></td>
+          <td>m</td>
+          <td class="right"><input type="text" id="i_esg150_unit" class="input-editavel" value="95,00" onfocus="focarInput(this)" onblur="aplicarMascaraDecimal(this); calcularInfra()" style="width:90px;"></td>
+          <td class="right computed" id="i_esg150_total">R$ 0</td>
+        </tr>
+        <tr>
+          <td>Coletor Esgoto Ø200mm</td>
+          <td class="right"><input type="text" id="i_esg200_qtd" class="input-editavel" value="600" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="width:90px;"></td>
+          <td>m</td>
+          <td class="right"><input type="text" id="i_esg200_unit" class="input-editavel" value="135,00" onfocus="focarInput(this)" onblur="aplicarMascaraDecimal(this); calcularInfra()" style="width:90px;"></td>
+          <td class="right computed" id="i_esg200_total">R$ 0</td>
+        </tr>
+        <tr>
+          <td>PV de Esgoto</td>
+          <td class="right"><input type="text" id="i_pvesg_qtd" class="input-editavel" value="45" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="width:90px;"></td>
+          <td>un</td>
+          <td class="right"><input type="text" id="i_pvesg_unit" class="input-editavel" value="1.200,00" onfocus="focarInput(this)" onblur="aplicarMascaraDecimal(this); calcularInfra()" style="width:90px;"></td>
+          <td class="right computed" id="i_pvesg_total">R$ 0</td>
+        </tr>
+        <tr>
+          <td>ETE / Elevatória</td>
+          <td class="right"><input type="text" id="i_ete_qtd" class="input-editavel" value="1" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="width:90px;"></td>
+          <td>un</td>
+          <td class="right"><input type="text" id="i_ete_unit" class="input-editavel" value="100.000,00" onfocus="focarInput(this)" onblur="aplicarMascaraDecimal(this); calcularInfra()" style="width:90px;"></td>
+          <td class="right computed" id="i_ete_total">R$ 0</td>
+        </tr>
+        <tr class="subtotal-row">
+          <td colspan="4" class="right"><strong>Subtotal Esgoto</strong></td>
+          <td class="right computed" id="subtotal_esg"><strong>R$ 0</strong></td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- ENERGIA -->
+    <div class="subsection-title">⚡ Sistema Elétrico</div>
+    <div class="table-container">
+      <table>
+        <tr>
+          <th style="width:40%">Item</th>
+          <th class="right" style="width:15%">Qtd</th>
+          <th style="width:10%">Un.</th>
+          <th class="right" style="width:15%">Custo Unit. (R$)</th>
+          <th class="right" style="width:20%">Custo Total (R$)</th>
+        </tr>
+        <tr>
+          <td>Postes de concreto</td>
+          <td class="right"><input type="text" id="i_poste_qtd" class="input-editavel" value="80" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="width:90px;"></td>
+          <td>un</td>
+          <td class="right"><input type="text" id="i_poste_unit" class="input-editavel" value="850,00" onfocus="focarInput(this)" onblur="aplicarMascaraDecimal(this); calcularInfra()" style="width:90px;"></td>
+          <td class="right computed" id="i_poste_total">R$ 0</td>
+        </tr>
+        <tr>
+          <td>Rede elétrica primária</td>
+          <td class="right"><input type="text" id="i_rede_qtd" class="input-editavel" value="2000" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="width:90px;"></td>
+          <td>m</td>
+          <td class="right"><input type="text" id="i_rede_unit" class="input-editavel" value="45,00" onfocus="focarInput(this)" onblur="aplicarMascaraDecimal(this); calcularInfra()" style="width:90px;"></td>
+          <td class="right computed" id="i_rede_total">R$ 0</td>
+        </tr>
+        <tr>
+          <td>Transformadores</td>
+          <td class="right"><input type="text" id="i_transf_qtd" class="input-editavel" value="3" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="width:90px;"></td>
+          <td>un</td>
+          <td class="right"><input type="text" id="i_transf_unit" class="input-editavel" value="18.000,00" onfocus="focarInput(this)" onblur="aplicarMascaraDecimal(this); calcularInfra()" style="width:90px;"></td>
+          <td class="right computed" id="i_transf_total">R$ 0</td>
+        </tr>
+        <tr>
+          <td>Padrões de entrada</td>
+          <td class="right"><input type="text" id="i_padrao_qtd" class="input-editavel" value="320" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="width:90px;"></td>
+          <td>un</td>
+          <td class="right"><input type="text" id="i_padrao_unit" class="input-editavel" value="450,00" onfocus="focarInput(this)" onblur="aplicarMascaraDecimal(this); calcularInfra()" style="width:90px;"></td>
+          <td class="right computed" id="i_padrao_total">R$ 0</td>
+        </tr>
+        <tr class="subtotal-row">
+          <td colspan="4" class="right"><strong>Subtotal Energia</strong></td>
+          <td class="right computed" id="subtotal_energia"><strong>R$ 0</strong></td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- ILUMINAÇÃO -->
+    <div class="subsection-title">💡 Iluminação Pública</div>
+    <div class="table-container">
+      <table>
+        <tr>
+          <th style="width:40%">Item</th>
+          <th class="right" style="width:15%">Qtd</th>
+          <th style="width:10%">Un.</th>
+          <th class="right" style="width:15%">Custo Unit. (R$)</th>
+          <th class="right" style="width:20%">Custo Total (R$)</th>
+        </tr>
+        <tr>
+          <td>Luminárias LED</td>
+          <td class="right"><input type="text" id="i_lum_qtd" class="input-editavel" value="160" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="width:90px;"></td>
+          <td>un</td>
+          <td class="right"><input type="text" id="i_lum_unit" class="input-editavel" value="650,00" onfocus="focarInput(this)" onblur="aplicarMascaraDecimal(this); calcularInfra()" style="width:90px;"></td>
+          <td class="right computed" id="i_lum_total">R$ 0</td>
+        </tr>
+        <tr>
+          <td>Quadros de comando</td>
+          <td class="right"><input type="text" id="i_quadro_qtd" class="input-editavel" value="4" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="width:90px;"></td>
+          <td>un</td>
+          <td class="right"><input type="text" id="i_quadro_unit" class="input-editavel" value="3.500,00" onfocus="focarInput(this)" onblur="aplicarMascaraDecimal(this); calcularInfra()" style="width:90px;"></td>
+          <td class="right computed" id="i_quadro_total">R$ 0</td>
+        </tr>
+        <tr class="subtotal-row">
+          <td colspan="4" class="right"><strong>Subtotal Iluminação</strong></td>
+          <td class="right computed" id="subtotal_ilum"><strong>R$ 0</strong></td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- SINALIZAÇÃO -->
+    <div class="subsection-title">🚦 Sinalização e Acessibilidade</div>
+    <div class="table-container">
+      <table>
+        <tr>
+          <th style="width:40%">Item</th>
+          <th class="right" style="width:15%">Qtd</th>
+          <th style="width:10%">Un.</th>
+          <th class="right" style="width:15%">Custo Unit. (R$)</th>
+          <th class="right" style="width:20%">Custo Total (R$)</th>
+        </tr>
+        <tr>
+          <td>Placas de sinalização</td>
+          <td class="right"><input type="text" id="i_placas_qtd" class="input-editavel" value="50" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="width:90px;"></td>
+          <td>un</td>
+          <td class="right"><input type="text" id="i_placas_unit" class="input-editavel" value="280,00" onfocus="focarInput(this)" onblur="aplicarMascaraDecimal(this); calcularInfra()" style="width:90px;"></td>
+          <td class="right computed" id="i_placas_total">R$ 0</td>
+        </tr>
+        <tr>
+          <td>Pintura de faixas</td>
+          <td class="right"><input type="text" id="i_pintura_qtd" class="input-editavel" value="800" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="width:90px;"></td>
+          <td>m</td>
+          <td class="right"><input type="text" id="i_pintura_unit" class="input-editavel" value="18,00" onfocus="focarInput(this)" onblur="aplicarMascaraDecimal(this); calcularInfra()" style="width:90px;"></td>
+          <td class="right computed" id="i_pintura_total">R$ 0</td>
+        </tr>
+        <tr>
+          <td>Calçadas acessíveis</td>
+          <td class="right"><input type="text" id="i_calcada_qtd" class="input-editavel" value="3000" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="width:90px;"></td>
+          <td>m²</td>
+          <td class="right"><input type="text" id="i_calcada_unit" class="input-editavel" value="55,00" onfocus="focarInput(this)" onblur="aplicarMascaraDecimal(this); calcularInfra()" style="width:90px;"></td>
+          <td class="right computed" id="i_calcada_total">R$ 0</td>
+        </tr>
+        <tr class="subtotal-row">
+          <td colspan="4" class="right"><strong>Subtotal Sinalização</strong></td>
+          <td class="right computed" id="subtotal_sinal"><strong>R$ 0</strong></td>
+        </tr>
+      </table>
+    </div>
+
+    <div style="margin-top:20px; padding:12px; background:#f0f7ff; border-left:4px solid #2E75B6; border-radius:0 8px 8px 0;">
+      <strong style="color:#1F4E79;">💡 Observação:</strong>
+      <p style="margin-top:6px; font-size:13px; color:#444; line-height:1.6;">
+        As utilidades representam os sistemas essenciais que garantem o funcionamento do loteamento.
+        Todos os valores podem ser ajustados conforme o projeto específico e condições locais.
+      </p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ PROJETOS ═══════════════════ -->
+  <div id="infra-projetos" class="tab-content">
+    <div class="section-title">📐 Projetos, Licenciamento e Diversos</div>
+
+    <div class="legend">
+      🟡 <strong>Editável:</strong> Quantidade e Custo Unitário • 🔵 <strong>Calculado:</strong> Custo Total
+    </div>
+
+    <!-- PROJETOS -->
+    <div class="subsection-title">📋 Projetos Técnicos</div>
+    <div class="table-container">
+      <table>
+        <tr>
+          <th style="width:40%">Item</th>
+          <th class="right" style="width:15%">Qtd</th>
+          <th style="width:10%">Un.</th>
+          <th class="right" style="width:15%">Custo Unit. (R$)</th>
+          <th class="right" style="width:20%">Custo Total (R$)</th>
+        </tr>
+        <tr>
+          <td>Projeto urbanístico</td>
+          <td class="right"><input type="text" id="i_proj_urb_qtd" class="input-editavel" value="1" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="width:90px;"></td>
+          <td>un</td>
+          <td class="right"><input type="text" id="i_proj_urb_unit" class="input-editavel" value="45.000,00" onfocus="focarInput(this)" onblur="aplicarMascaraDecimal(this); calcularInfra()" style="width:90px;"></td>
+          <td class="right computed" id="i_proj_urb_total">R$ 0</td>
+        </tr>
+        <tr>
+          <td>Projeto de infraestrutura</td>
+          <td class="right"><input type="text" id="i_proj_infra_qtd" class="input-editavel" value="1" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="width:90px;"></td>
+          <td>un</td>
+          <td class="right"><input type="text" id="i_proj_infra_unit" class="input-editavel" value="35.000,00" onfocus="focarInput(this)" onblur="aplicarMascaraDecimal(this); calcularInfra()" style="width:90px;"></td>
+          <td class="right computed" id="i_proj_infra_total">R$ 0</td>
+        </tr>
+        <tr>
+          <td>Licenciamento ambiental</td>
+          <td class="right"><input type="text" id="i_lic_qtd" class="input-editavel" value="1" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="width:90px;"></td>
+          <td>un</td>
+          <td class="right"><input type="text" id="i_lic_unit" class="input-editavel" value="28.000,00" onfocus="focarInput(this)" onblur="aplicarMascaraDecimal(this); calcularInfra()" style="width:90px;"></td>
+          <td class="right computed" id="i_lic_total">R$ 0</td>
+        </tr>
+        <tr>
+          <td>Topografia e geotecnia</td>
+          <td class="right"><input type="text" id="i_topo_qtd" class="input-editavel" value="1" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="width:90px;"></td>
+          <td>un</td>
+          <td class="right"><input type="text" id="i_topo_unit" class="input-editavel" value="22.000,00" onfocus="focarInput(this)" onblur="aplicarMascaraDecimal(this); calcularInfra()" style="width:90px;"></td>
+          <td class="right computed" id="i_topo_total">R$ 0</td>
+        </tr>
+        <tr class="subtotal-row">
+          <td colspan="4" class="right"><strong>Subtotal Projetos</strong></td>
+          <td class="right computed" id="subtotal_proj"><strong>R$ 0</strong></td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- DIVERSOS -->
+    <div class="subsection-title">🏗️ Itens Diversos</div>
+    <div class="table-container">
+      <table>
+        <tr>
+          <th style="width:40%">Item</th>
+          <th class="right" style="width:15%">Qtd</th>
+          <th style="width:10%">Un.</th>
+          <th class="right" style="width:15%">Custo Unit. (R$)</th>
+          <th class="right" style="width:20%">Custo Total (R$)</th>
+        </tr>
+        <tr>
+          <td>Portaria / Guarita</td>
+          <td class="right"><input type="text" id="i_portaria_qtd" class="input-editavel" value="1" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="width:90px;"></td>
+          <td>un</td>
+          <td class="right"><input type="text" id="i_portaria_unit" class="input-editavel" value="80.000,00" onfocus="focarInput(this)" onblur="aplicarMascaraDecimal(this); calcularInfra()" style="width:90px;"></td>
+          <td class="right computed" id="i_portaria_total">R$ 0</td>
+        </tr>
+        <tr>
+          <td>Paisagismo</td>
+          <td class="right"><input type="text" id="i_paisag_qtd" class="input-editavel" value="5000" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="width:90px;"></td>
+          <td>m²</td>
+          <td class="right"><input type="text" id="i_paisag_unit" class="input-editavel" value="25,00" onfocus="focarInput(this)" onblur="aplicarMascaraDecimal(this); calcularInfra()" style="width:90px;"></td>
+          <td class="right computed" id="i_paisag_total">R$ 0</td>
+        </tr>
+        <tr>
+          <td>Cercamento / Muro</td>
+          <td class="right"><input type="text" id="i_cerca_qtd" class="input-editavel" value="1200" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="width:90px;"></td>
+          <td>m</td>
+          <td class="right"><input type="text" id="i_cerca_unit" class="input-editavel" value="180,00" onfocus="focarInput(this)" onblur="aplicarMascaraDecimal(this); calcularInfra()" style="width:90px;"></td>
+          <td class="right computed" id="i_cerca_total">R$ 0</td>
+        </tr>
+        <tr>
+          <td>Imprevistos (contingência)</td>
+          <td class="right"><input type="text" id="i_imprev_qtd" class="input-editavel" value="1" onfocus="focarInput(this)" onblur="aplicarMascaraInteiro(this); calcularInfra()" style="width:90px;"></td>
+          <td>un</td>
+          <td class="right"><input type="text" id="i_imprev_unit" class="input-editavel" value="206.600,00" onfocus="focarInput(this)" onblur="aplicarMascaraDecimal(this); calcularInfra()" style="width:90px;"></td>
+          <td class="right computed" id="i_imprev_total">R$ 0</td>
+        </tr>
+        <tr class="subtotal-row">
+          <td colspan="4" class="right"><strong>Subtotal Diversos</strong></td>
+          <td class="right computed" id="subtotal_div"><strong>R$ 0</strong></td>
+        </tr>
+      </table>
+    </div>
+
+    <div style="margin-top:20px; padding:12px; background:#f0f7ff; border-left:4px solid #2E75B6; border-radius:0 8px 8px 0;">
+      <strong style="color:#1F4E79;">💡 Observação:</strong>
+      <p style="margin-top:6px; font-size:13px; color:#444; line-height:1.6;">
+        Os projetos técnicos são essenciais para a aprovação do loteamento junto aos órgãos competentes.
+        A contingência (imprevistos) serve para absorver variações não previstas durante a execução.
+      </p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ FINANCEIRO ═══════════════════ -->
+  <div id="financeiro" class="tab-content">
+
+    <div class="section-title">Análise Financeira Completa</div>
+
+    <div class="parceria-grid">
+      <div class="parceria-card parceria-emp">
+        <div class="parceria-nome">Empreendedor</div>
+        <div class="parceria-perc"><span id="fin_perc_emp">65</span>%</div>
+        <div class="parceria-valor" id="fin_net_emp">R$ 0</div>
+        <div class="parceria-sub">Net após impostos (estimado)</div>
+      </div>
+      <div class="parceria-card parceria-ter">
+        <div class="parceria-nome">Terrenista</div>
+        <div class="parceria-perc"><span id="fin_perc_terr">35</span>%</div>
+        <div class="parceria-valor" id="fin_net_terr">R$ 0</div>
+        <div class="parceria-sub">Sobre lucro bruto (pré-impostos)</div>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table>
+        <tr>
+          <th style="width:50%">Item</th>
+          <th class="right" style="width:25%">Valor (R$)</th>
+          <th class="right" style="width:15%">% do VGV</th>
+          <th style="width:10%">Status</th>
+        </tr>
+
+        <tr style="background:#1F4E79; color:white; font-weight:700;">
+          <td colspan="4">RECEITA</td>
+        </tr>
+        <tr style="background:#D5F5E3; font-weight:700;">
+          <td>VGV Total (lotes × preço)</td>
+          <td class="right" id="fin_vgv">R$ 0</td>
+          <td class="right">100,0%</td>
+          <td class="center">✅</td>
+        </tr>
+
+        <tr style="background:#1F4E79; color:white; font-weight:700;">
+          <td colspan="4">CUSTOS OPERACIONAIS</td>
+        </tr>
+        <tr>
+          <td>Infraestrutura total</td>
+          <td class="right" id="fin_infra">R$ 0</td>
+          <td class="right" id="fin_infra_perc">0%</td>
+          <td class="center">—</td>
+        </tr>
+        <tr>
+          <td>Corretagem</td>
+          <td class="right" id="fin_corret">R$ 0</td>
+          <td class="right" id="fin_corret_perc">0%</td>
+          <td class="center">—</td>
+        </tr>
+        <tr>
+          <td>Marketing e lançamento</td>
+          <td class="right" id="fin_mkt">R$ 0</td>
+          <td class="right" id="fin_mkt_perc">0%</td>
+          <td class="center">—</td>
+        </tr>
+        <tr>
+          <td>Administração</td>
+          <td class="right" id="fin_admin">R$ 0</td>
+          <td class="right" id="fin_admin_perc">0%</td>
+          <td class="center">—</td>
+        </tr>
+        <tr>
+          <td>Contingência</td>
+          <td class="right" id="fin_cont">R$ 0</td>
+          <td class="right" id="fin_cont_perc">0%</td>
+          <td class="center">—</td>
+        </tr>
+        <tr style="background:#D5E8D4; font-weight:700;">
+          <td>TOTAL CUSTOS OPERACIONAIS</td>
+          <td class="right" id="fin_custos_op">R$ 0</td>
+          <td class="right" id="fin_custos_op_perc">0%</td>
+          <td class="center">✅</td>
+        </tr>
+
+        <tr style="background:#FEF9E7; font-weight:700;">
+          <td>Impostos estimados — Lucro Presumido</td>
+          <td class="right" id="fin_impostos">R$ 0</td>
+          <td class="right" id="fin_impostos_perc">0%</td>
+          <td class="center">⚠️</td>
+        </tr>
+
+        <tr style="background:#D6E4F0; font-weight:700;">
+          <td>TOTAL CUSTOS (com impostos)</td>
+          <td class="right" id="fin_custos_total">R$ 0</td>
+          <td class="right" id="fin_custos_total_perc">0%</td>
+          <td class="center">✅</td>
+        </tr>
+
+        <tr style="background:#1F4E79; color:white; font-weight:700;">
+          <td colspan="4">RESULTADOS</td>
+        </tr>
+        <tr style="background:#D5F5E3; font-weight:700; color:#196F3D;">
+          <td>Lucro Bruto (antes impostos — base divisão)</td>
+          <td class="right" id="fin_lucro_bruto">R$ 0</td>
+          <td class="right" id="fin_lucro_bruto_perc">0%</td>
+          <td class="center">✅</td>
+        </tr>
+        <tr style="background:#D5F5E3; font-weight:700; color:#196F3D;">
+          <td>Lucro Líquido (após impostos)</td>
+          <td class="right" id="fin_lucro_liquido">R$ 0</td>
+          <td class="right" id="fin_lucro_liquido_perc">0%</td>
+          <td class="center">✅</td>
+        </tr>
+
+        <tr style="background:#1F4E79; color:white; font-weight:700;">
+          <td colspan="4">DISTRIBUIÇÃO (base = Lucro Bruto)</td>
+        </tr>
+        <tr style="background:#D6E4F0; font-weight:700;">
+          <td>Net Empreendedor (65% − impostos proporcionais)</td>
+          <td class="right" id="fin_net_emp_tab">R$ 0</td>
+          <td class="right" id="fin_net_emp_perc">0%</td>
+          <td class="center">✅</td>
+        </tr>
+        <tr style="background:#F2F2F2; font-weight:700;">
+          <td>Net Terrenista (35% do lucro bruto)</td>
+          <td class="right" id="fin_net_terr_tab">R$ 0</td>
+          <td class="right" id="fin_net_terr_perc">0%</td>
+          <td class="center">✅</td>
+        </tr>
+      </table>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════ CENÁRIOS ═══════════════════ -->
+  <div id="cenarios" class="tab-content">
+
+    <div class="section-title">Análise de Cenários — Preço e Velocidade</div>
+
+    <div class="legend">
+      Moderado vincula automaticamente com as Premissas. Pessimista e Otimista são editáveis.
+    </div>
+
+    <div class="cenario-grid">
+
+      <div class="cenario-card cenario-pessimista">
+        <div class="cenario-label">Pessimista</div>
+        <div class="cenario-item">
+          <div class="cenario-item-label">Preço por lote:</div>
+          <div class="cenario-item-value">
+            R$ <input type="text" id="cen_pess_preco" class="input-editavel" value="65000" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularCenarios()" style="width:100px; display:inline;">
+          </div>
+        </div>
+        <div class="cenario-item">
+          <div class="cenario-item-label">Velocidade:</div>
+          <div class="cenario-item-value">6 lotes/mês</div>
+        </div>
+        <div class="cenario-item">
+          <div class="cenario-item-label">VGV Total:</div>
+          <div class="cenario-item-value" id="cen_pess_vgv">R$ 0</div>
+        </div>
+        <div class="cenario-item">
+          <div class="cenario-item-label">Custos operacionais:</div>
+          <div class="cenario-item-value" id="cen_pess_custos">R$ 0</div>
+        </div>
+        <div class="cenario-item">
+          <div class="cenario-item-label">Lucro Bruto:</div>
+          <div class="cenario-item-value" id="cen_pess_lucro">R$ 0</div>
+        </div>
+        <div class="cenario-item">
+          <div class="cenario-item-label">Margem Bruta:</div>
+          <div class="cenario-item-value" id="cen_pess_margem">0%</div>
+        </div>
+        <div class="cenario-item">
+          <div class="cenario-item-label">Net Empreendedor:</div>
+          <div class="cenario-item-value" id="cen_pess_net">R$ 0</div>
+        </div>
+        <div class="cenario-item">
+          <div class="cenario-item-label">Prazo venda:</div>
+          <div class="cenario-item-value">55 meses</div>
+        </div>
+      </div>
+
+      <div class="cenario-card cenario-moderado">
+        <div class="cenario-label">Moderado ★ BASE</div>
+        <div class="cenario-item">
+          <div class="cenario-item-label">Preço por lote:</div>
+          <div class="cenario-item-value" id="cen_mod_preco">R$ 0</div>
+        </div>
+        <div class="cenario-item">
+          <div class="cenario-item-label">Velocidade:</div>
+          <div class="cenario-item-value">12 lotes/mês</div>
+        </div>
+        <div class="cenario-item">
+          <div class="cenario-item-label">VGV Total:</div>
+          <div class="cenario-item-value" id="cen_mod_vgv">R$ 0</div>
+        </div>
+        <div class="cenario-item">
+          <div class="cenario-item-label">Custos operacionais:</div>
+          <div class="cenario-item-value" id="cen_mod_custos">R$ 0</div>
+        </div>
+        <div class="cenario-item">
+          <div class="cenario-item-label">Lucro Bruto:</div>
+          <div class="cenario-item-value" id="cen_mod_lucro">R$ 0</div>
+        </div>
+        <div class="cenario-item">
+          <div class="cenario-item-label">Margem Bruta:</div>
+          <div class="cenario-item-value" id="cen_mod_margem">0%</div>
+        </div>
+        <div class="cenario-item">
+          <div class="cenario-item-label">Net Empreendedor:</div>
+          <div class="cenario-item-value" id="cen_mod_net">R$ 0</div>
+        </div>
+        <div class="cenario-item">
+          <div class="cenario-item-label">Prazo venda:</div>
+          <div class="cenario-item-value">27 meses</div>
+        </div>
+      </div>
+
+      <div class="cenario-card cenario-otimista">
+        <div class="cenario-label">Otimista</div>
+        <div class="cenario-item">
+          <div class="cenario-item-label">Preço por lote:</div>
+          <div class="cenario-item-value">
+            R$ <input type="text" id="cen_oti_preco" class="input-editavel" value="95000" onfocus="focarInput(this)" onblur="aplicarMascaraMoeda(this); calcularCenarios()" style="width:100px; display:inline;">
+          </div>
+        </div>
+        <div class="cenario-item">
+          <div class="cenario-item-label">Velocidade:</div>
+          <div class="cenario-item-value">18 lotes/mês</div>
+        </div>
+        <div class="cenario-item">
+          <div class="cenario-item-label">VGV Total:</div>
+          <div class="cenario-item-value" id="cen_oti_vgv">R$ 0</div>
+        </div>
+        <div class="cenario-item">
+          <div class="cenario-item-label">Custos operacionais:</div>
+          <div class="cenario-item-value" id="cen_oti_custos">R$ 0</div>
+        </div>
+        <div class="cenario-item">
+          <div class="cenario-item-label">Lucro Bruto:</div>
+          <div class="cenario-item-value" id="cen_oti_lucro">R$ 0</div>
+        </div>
+        <div class="cenario-item">
+          <div class="cenario-item-label">Margem Bruta:</div>
+          <div class="cenario-item-value" id="cen_oti_margem">0%</div>
+        </div>
+        <div class="cenario-item">
+          <div class="cenario-item-label">Net Empreendedor:</div>
+          <div class="cenario-item-value" id="cen_oti_net">R$ 0</div>
+        </div>
+        <div class="cenario-item">
+          <div class="cenario-item-label">Prazo venda:</div>
+          <div class="cenario-item-value">18 meses</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="margin-top:30px; padding:16px; background:#f0f7ff; border-left:4px solid #2E75B6; border-radius:0 8px 8px 0;">
+      <strong style="color:#1F4E79;">💡 Análise:</strong>
+      <p style="margin-top:8px; font-size:13px; color:#444; line-height:1.7;">
+        Mesmo no cenário pessimista (R$ 65.000/lote), o empreendimento mantém viabilidade
+        com margem bruta positiva. O mercado de Papagaios sem oferta há +1 ano favorece
+        o cenário moderado ou otimista.
+      </p>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- Botões de Ação -->
+<div class="actions">
+  <button class="btn-secondary" onclick="salvarDados()">💾 Salvar Dados</button>
+  <button class="btn-secondary" onclick="carregarDados()">📂 Carregar</button>
+  <button class="btn-primary" onclick="window.print()">🖨️ Imprimir / PDF</button>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// SISTEMA DE CÁLCULOS — Atualiza em tempo real
+// ═══════════════════════════════════════════════════════
+
+// Funções de formatação para exibição
+function formataMoeda(valor) {
+  return 'R$ ' + valor.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+}
+
+function formataMoeda2(valor) {
+  return 'R$ ' + valor.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+}
+
+function formataPerc(valor) {
+  return (valor * 100).toFixed(1) + '%';
+}
+
+function formataInt(valor) {
+  return Math.floor(valor).toLocaleString('pt-BR');
+}
+
+// ═══════════════════════════════════════════════════════
+// MÁSCARAS DE ENTRADA — Formatação nos inputs
+// ═══════════════════════════════════════════════════════
+
+function removerMascara(valor) {
+  if (typeof valor === 'number') return valor;
+  if (!valor) return 0;
+
+  const str = valor.toString().trim();
+
+  // Remove R$ e espaços
+  let limpo = str.replace(/R\$/g, '').replace(/\s/g, '');
+
+  // Detectar formato brasileiro vs US/internacional
+  const temVirgula = limpo.includes(',');
+  const temPonto = limpo.includes('.');
+
+  if (temVirgula) {
+    // Formato brasileiro: remove pontos (separadores de milhar) e troca vírgula por ponto decimal
+    // Ex: 1.234.567,89 → 1234567.89
+    limpo = limpo.replace(/\./g, '').replace(',', '.');
+  } else if (temPonto) {
+    // Tem ponto mas não vírgula - pode ser separador de milhar OU decimal
+    // Se tem múltiplos pontos, são separadores de milhar: 1.234.567 → 1234567
+    // Se tem apenas um ponto E está a 3 dígitos do fim, é separador de milhar: 1.000 → 1000
+    // Se tem apenas um ponto E está a 1 ou 2 dígitos do fim, é decimal: 1.5 ou 10.50
+    const pontos = (limpo.match(/\./g) || []).length;
+
+    if (pontos > 1) {
+      // Múltiplos pontos = separadores de milhar
+      limpo = limpo.replace(/\./g, '');
+    } else {
+      // Um único ponto - verificar posição
+      const partes = limpo.split('.');
+      const decimais = partes[1];
+
+      if (decimais && decimais.length === 3 && !isNaN(partes[0]) && partes[0].length >= 1) {
+        // Formato tipo 1.000 ou 123.456 - ponto é separador de milhar
+        limpo = limpo.replace(/\./g, '');
+      }
+      // Senão, o ponto é decimal e fica como está
+    }
+  }
+
+  return parseFloat(limpo) || 0;
+}
+
+function aplicarMascaraMoeda(input) {
+  let valor = removerMascara(input.value);
+  input.value = valor.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+}
+
+function aplicarMascaraInteiro(input) {
+  let valor = removerMascara(input.value);
+  input.value = Math.floor(valor).toLocaleString('pt-BR');
+}
+
+function aplicarMascaraDecimal(input, decimais = 1) {
+  let valor = removerMascara(input.value);
+  input.value = valor.toLocaleString('pt-BR', {minimumFractionDigits: decimais, maximumFractionDigits: decimais});
+}
+
+function focarInput(input) {
+  // Remove formatação ao focar para facilitar edição
+  let valor = removerMascara(input.value);
+  input.value = valor;
+  input.select();
+}
+
+// Obter valor de input (com remoção de máscara)
+function getVal(id) {
+  const el = document.getElementById(id);
+  if (!el) return 0;
+  return removerMascara(el.value);
+}
+
+// Setar valor em span ou input
+function setVal(id, valor) {
+  const el = document.getElementById(id);
+  if (!el) return;
+
+  if (el.tagName === 'INPUT') {
+    el.value = valor;
+  } else {
+    el.textContent = valor;
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// CÁLCULO DE INFRAESTRUTURA — Detalhamento completo
+// ═══════════════════════════════════════════════════════
+
+function calcularInfra() {
+  // ────────────────────────────────────────────────────
+  // 1. TERRAPLENAGEM
+  // ────────────────────────────────────────────────────
+  const limp_qtd = getVal('i_limp_qtd');
+  const limp_unit = getVal('i_limp_unit');
+  const i_limp = limp_qtd * limp_unit;
+
+  console.log('DEBUG - Limpeza:');
+  console.log('  Qtd string:', document.getElementById('i_limp_qtd')?.value);
+  console.log('  Unit string:', document.getElementById('i_limp_unit')?.value);
+  console.log('  Qtd parsed:', limp_qtd);
+  console.log('  Unit parsed:', limp_unit);
+  console.log('  Total:', i_limp);
+
+  const i_corte = getVal('i_corte_qtd') * getVal('i_corte_unit');
+  const i_comp = getVal('i_comp_qtd') * getVal('i_comp_unit');
+  const subtotal_terra = i_limp + i_corte + i_comp;
+
+  console.log('DEBUG - Subtotal Terra:', subtotal_terra);
+
+  setVal('i_limp_total', formataMoeda(i_limp));
+  setVal('i_corte_total', formataMoeda(i_corte));
+  setVal('i_comp_total', formataMoeda(i_comp));
+  setVal('subtotal_terra', formataMoeda(subtotal_terra));
+
+  // ────────────────────────────────────────────────────
+  // 2. PAVIMENTAÇÃO
+  // ────────────────────────────────────────────────────
+  const i_subbase = getVal('i_subbase_qtd') * getVal('i_subbase_unit');
+  const i_base = getVal('i_base_qtd') * getVal('i_base_unit');
+  const i_asfalto = getVal('i_asfalto_qtd') * getVal('i_asfalto_unit');
+  const i_meiofio = getVal('i_meiofio_qtd') * getVal('i_meiofio_unit');
+  const subtotal_pav = i_subbase + i_base + i_asfalto + i_meiofio;
+
+  setVal('i_subbase_total', formataMoeda(i_subbase));
+  setVal('i_base_total', formataMoeda(i_base));
+  setVal('i_asfalto_total', formataMoeda(i_asfalto));
+  setVal('i_meiofio_total', formataMoeda(i_meiofio));
+  setVal('subtotal_pav', formataMoeda(subtotal_pav));
+
+  // ────────────────────────────────────────────────────
+  // 3. DRENAGEM
+  // ────────────────────────────────────────────────────
+  const i_dren400 = getVal('i_dren400_qtd') * getVal('i_dren400_unit');
+  const i_dren600 = getVal('i_dren600_qtd') * getVal('i_dren600_unit');
+  const i_bocalobo = getVal('i_bocalobo_qtd') * getVal('i_bocalobo_unit');
+  const i_pv = getVal('i_pv_qtd') * getVal('i_pv_unit');
+  const subtotal_dren = i_dren400 + i_dren600 + i_bocalobo + i_pv;
+
+  setVal('i_dren400_total', formataMoeda(i_dren400));
+  setVal('i_dren600_total', formataMoeda(i_dren600));
+  setVal('i_bocalobo_total', formataMoeda(i_bocalobo));
+  setVal('i_pv_total', formataMoeda(i_pv));
+  setVal('subtotal_dren', formataMoeda(subtotal_dren));
+
+  // Total Pavimentação + Drenagem (para exibir na aba)
+  const total_pav_dren = subtotal_pav + subtotal_dren;
+  setVal('total_pav_dren', formataMoeda(total_pav_dren));
+
+  // ────────────────────────────────────────────────────
+  // 4. ÁGUA
+  // ────────────────────────────────────────────────────
+  const i_agua75 = getVal('i_agua75_qtd') * getVal('i_agua75_unit');
+  const i_agua110 = getVal('i_agua110_qtd') * getVal('i_agua110_unit');
+  const i_hidro = getVal('i_hidro_qtd') * getVal('i_hidro_unit');
+  const i_reserv = getVal('i_reserv_qtd') * getVal('i_reserv_unit');
+  const subtotal_agua = i_agua75 + i_agua110 + i_hidro + i_reserv;
+
+  setVal('i_agua75_total', formataMoeda(i_agua75));
+  setVal('i_agua110_total', formataMoeda(i_agua110));
+  setVal('i_hidro_total', formataMoeda(i_hidro));
+  setVal('i_reserv_total', formataMoeda(i_reserv));
+  setVal('subtotal_agua', formataMoeda(subtotal_agua));
+
+  // ────────────────────────────────────────────────────
+  // 5. ESGOTO
+  // ────────────────────────────────────────────────────
+  const i_esg150 = getVal('i_esg150_qtd') * getVal('i_esg150_unit');
+  const i_esg200 = getVal('i_esg200_qtd') * getVal('i_esg200_unit');
+  const i_pvesg = getVal('i_pvesg_qtd') * getVal('i_pvesg_unit');
+  const i_ete = getVal('i_ete_qtd') * getVal('i_ete_unit');
+  const subtotal_esg = i_esg150 + i_esg200 + i_pvesg + i_ete;
+
+  setVal('i_esg150_total', formataMoeda(i_esg150));
+  setVal('i_esg200_total', formataMoeda(i_esg200));
+  setVal('i_pvesg_total', formataMoeda(i_pvesg));
+  setVal('i_ete_total', formataMoeda(i_ete));
+  setVal('subtotal_esg', formataMoeda(subtotal_esg));
+
+  // ────────────────────────────────────────────────────
+  // 6. ENERGIA
+  // ────────────────────────────────────────────────────
+  const i_poste = getVal('i_poste_qtd') * getVal('i_poste_unit');
+  const i_rede = getVal('i_rede_qtd') * getVal('i_rede_unit');
+  const i_transf = getVal('i_transf_qtd') * getVal('i_transf_unit');
+  const i_padrao = getVal('i_padrao_qtd') * getVal('i_padrao_unit');
+  const subtotal_energia = i_poste + i_rede + i_transf + i_padrao;
+
+  setVal('i_poste_total', formataMoeda(i_poste));
+  setVal('i_rede_total', formataMoeda(i_rede));
+  setVal('i_transf_total', formataMoeda(i_transf));
+  setVal('i_padrao_total', formataMoeda(i_padrao));
+  setVal('subtotal_energia', formataMoeda(subtotal_energia));
+
+  // ────────────────────────────────────────────────────
+  // 7. ILUMINAÇÃO
+  // ────────────────────────────────────────────────────
+  const i_lum = getVal('i_lum_qtd') * getVal('i_lum_unit');
+  const i_quadro = getVal('i_quadro_qtd') * getVal('i_quadro_unit');
+  const subtotal_ilum = i_lum + i_quadro;
+
+  setVal('i_lum_total', formataMoeda(i_lum));
+  setVal('i_quadro_total', formataMoeda(i_quadro));
+  setVal('subtotal_ilum', formataMoeda(subtotal_ilum));
+
+  // ────────────────────────────────────────────────────
+  // 8. SINALIZAÇÃO
+  // ────────────────────────────────────────────────────
+  const i_placas = getVal('i_placas_qtd') * getVal('i_placas_unit');
+  const i_pintura = getVal('i_pintura_qtd') * getVal('i_pintura_unit');
+  const i_calcada = getVal('i_calcada_qtd') * getVal('i_calcada_unit');
+  const subtotal_sinal = i_placas + i_pintura + i_calcada;
+
+  setVal('i_placas_total', formataMoeda(i_placas));
+  setVal('i_pintura_total', formataMoeda(i_pintura));
+  setVal('i_calcada_total', formataMoeda(i_calcada));
+  setVal('subtotal_sinal', formataMoeda(subtotal_sinal));
+
+  // ────────────────────────────────────────────────────
+  // 9. PROJETOS
+  // ────────────────────────────────────────────────────
+  const i_proj_urb = getVal('i_proj_urb_qtd') * getVal('i_proj_urb_unit');
+  const i_proj_infra = getVal('i_proj_infra_qtd') * getVal('i_proj_infra_unit');
+  const i_lic = getVal('i_lic_qtd') * getVal('i_lic_unit');
+  const i_topo = getVal('i_topo_qtd') * getVal('i_topo_unit');
+  const subtotal_proj = i_proj_urb + i_proj_infra + i_lic + i_topo;
+
+  setVal('i_proj_urb_total', formataMoeda(i_proj_urb));
+  setVal('i_proj_infra_total', formataMoeda(i_proj_infra));
+  setVal('i_lic_total', formataMoeda(i_lic));
+  setVal('i_topo_total', formataMoeda(i_topo));
+  setVal('subtotal_proj', formataMoeda(subtotal_proj));
+
+  // ────────────────────────────────────────────────────
+  // 10. DIVERSOS
+  // ────────────────────────────────────────────────────
+  const i_portaria = getVal('i_portaria_qtd') * getVal('i_portaria_unit');
+  const i_paisag = getVal('i_paisag_qtd') * getVal('i_paisag_unit');
+  const i_cerca = getVal('i_cerca_qtd') * getVal('i_cerca_unit');
+  const i_imprev = getVal('i_imprev_qtd') * getVal('i_imprev_unit');
+  const subtotal_div = i_portaria + i_paisag + i_cerca + i_imprev;
+
+  setVal('i_portaria_total', formataMoeda(i_portaria));
+  setVal('i_paisag_total', formataMoeda(i_paisag));
+  setVal('i_cerca_total', formataMoeda(i_cerca));
+  setVal('i_imprev_total', formataMoeda(i_imprev));
+  setVal('subtotal_div', formataMoeda(subtotal_div));
+
+  // ────────────────────────────────────────────────────
+  // CONSOLIDAÇÃO
+  // ────────────────────────────────────────────────────
+  const total_infra = subtotal_terra + subtotal_pav + subtotal_dren +
+                      subtotal_agua + subtotal_esg + subtotal_energia +
+                      subtotal_ilum + subtotal_sinal + subtotal_proj + subtotal_div;
+
+  // Atualizar consolidação
+  setVal('cons_terra', formataMoeda(subtotal_terra));
+  setVal('cons_terra_perc', formataPerc(subtotal_terra / total_infra));
+  setVal('cons_pav', formataMoeda(subtotal_pav));
+  setVal('cons_pav_perc', formataPerc(subtotal_pav / total_infra));
+  setVal('cons_dren', formataMoeda(subtotal_dren));
+  setVal('cons_dren_perc', formataPerc(subtotal_dren / total_infra));
+  setVal('cons_agua', formataMoeda(subtotal_agua));
+  setVal('cons_agua_perc', formataPerc(subtotal_agua / total_infra));
+  setVal('cons_esg', formataMoeda(subtotal_esg));
+  setVal('cons_esg_perc', formataPerc(subtotal_esg / total_infra));
+  setVal('cons_energia', formataMoeda(subtotal_energia));
+  setVal('cons_energia_perc', formataPerc(subtotal_energia / total_infra));
+  setVal('cons_ilum', formataMoeda(subtotal_ilum));
+  setVal('cons_ilum_perc', formataPerc(subtotal_ilum / total_infra));
+  setVal('cons_sinal', formataMoeda(subtotal_sinal));
+  setVal('cons_sinal_perc', formataPerc(subtotal_sinal / total_infra));
+  setVal('cons_proj', formataMoeda(subtotal_proj));
+  setVal('cons_proj_perc', formataPerc(subtotal_proj / total_infra));
+  setVal('cons_div', formataMoeda(subtotal_div));
+  setVal('cons_div_perc', formataPerc(subtotal_div / total_infra));
+  setVal('cons_total', formataMoeda(total_infra));
+
+  // Atualizar resumo
+  const lotes = getVal('p_lotes');
+  const vgv = getVal('p_preco') * lotes;
+
+  setVal('infra_resumo_total', formataMoeda(total_infra));
+  setVal('infra_resumo_lote', formataMoeda(total_infra / lotes));
+  setVal('infra_resumo_perc', formataPerc(total_infra / vgv));
+  setVal('infra_qtd_lotes', formataInt(lotes));
+
+  // Atualizar campo p_infra_total (sem chamar calcular() novamente para evitar loop)
+  const el = document.getElementById('p_infra_total');
+  if (el) {
+    el.value = total_infra.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+  }
+
+  // Chamar calcular() para atualizar todos os outros cálculos
+  calcular();
+}
+
+// Função principal de cálculo
+function calcular() {
+  // ────────────────────────────────────────────────────
+  // 1. PREMISSAS — Leitura e cálculos base
+  // ────────────────────────────────────────────────────
+
+  const area_ha = getVal('p_area_ha');
+  const area_m2 = area_ha * 10000;
+
+  const vias = getVal('p_vias') / 100;
+  const verdes = getVal('p_verdes') / 100;
+  const institucional = getVal('p_institucional') / 100;
+  const deducoes_total = vias + verdes + institucional;
+  const liquida_perc = 1 - deducoes_total;
+  const liquida_m2 = area_m2 * liquida_perc;
+
+  const tamanho_lote = getVal('p_tamanho_lote');
+  const lotes_ref = Math.floor(liquida_m2 / tamanho_lote);
+  const lotes = getVal('p_lotes');
+
+  const perc_emp = getVal('p_perc_emp') / 100;
+  const perc_terr = 1 - perc_emp;
+
+  const preco = getVal('p_preco');
+  const preco_m2 = preco / tamanho_lote;
+  const vgv = lotes * preco;
+  const vgv_emp = vgv * perc_emp;
+  const vgv_terr = vgv * perc_terr;
+
+  const corretagem = getVal('p_corretagem') / 100;
+  const marketing = getVal('p_marketing') / 100;
+  const admin = getVal('p_admin') / 100;
+  const contingencia = getVal('p_contingencia') / 100;
+  const impostos = getVal('p_impostos') / 100;
+
+  const capital = getVal('p_capital');
+  const vista = getVal('p_vista') / 100;
+  const financiado = 1 - vista;
+  const prazo = getVal('p_prazo');
+  const sinal = getVal('p_sinal') / 100;
+  const saldo_apos_sinal = preco * (1 - sinal);
+  const parcela = saldo_apos_sinal / prazo;
+
+  // Atualizar campos calculados nas Premissas
+  setVal('p_area_m2', formataInt(area_m2));
+  setVal('p_deducoes_total', formataPerc(deducoes_total));
+  setVal('p_liquida_perc', formataPerc(liquida_perc));
+  setVal('p_liquida_m2', formataInt(liquida_m2));
+  setVal('p_lotes_ref', formataInt(lotes_ref));
+  setVal('p_perc_terr', formataPerc(perc_terr));
+  setVal('p_preco_m2', formataMoeda2(preco_m2));
+  setVal('p_vgv', formataMoeda(vgv));
+  setVal('p_vgv_emp', formataMoeda(vgv_emp));
+  setVal('p_vgv_terr', formataMoeda(vgv_terr));
+  setVal('p_financiado', formataPerc(financiado));
+  setVal('p_parcela', formataMoeda2(parcela));
+
+  // ────────────────────────────────────────────────────
+  // 2. INFRAESTRUTURA — Custo total
+  // ────────────────────────────────────────────────────
+
+  const infra_total = getVal('p_infra_total');
+  const infra_lote = infra_total / lotes;
+
+  // Atualizar infraestrutura
+  setVal('infra_custo_lote', formataMoeda2(infra_lote));
+
+  // ────────────────────────────────────────────────────
+  // 3. FINANCEIRO — Custos, lucros e distribuição
+  // ────────────────────────────────────────────────────
+
+  const c_infra = infra_total;
+  const c_corret = vgv * corretagem;
+  const c_mkt = vgv * marketing;
+  const c_admin = vgv * admin;
+  const c_cont = vgv * contingencia;
+  const custos_op = c_infra + c_corret + c_mkt + c_admin + c_cont;
+
+  const c_impostos = vgv * impostos;
+  const custos_total = custos_op + c_impostos;
+
+  const lucro_bruto = vgv - custos_op;
+  const lucro_liquido = vgv - custos_total;
+
+  const margem_bruta = lucro_bruto / vgv;
+  const margem_liquida = lucro_liquido / vgv;
+
+  // Distribuição
+  const net_emp = lucro_bruto * perc_emp - c_impostos * perc_emp;
+  const net_terr = lucro_bruto * perc_terr;
+
+  // Atualizar Financeiro
+  setVal('fin_perc_emp', (perc_emp * 100).toFixed(0));
+  setVal('fin_perc_terr', (perc_terr * 100).toFixed(0));
+  setVal('fin_net_emp', formataMoeda(net_emp));
+  setVal('fin_net_terr', formataMoeda(net_terr));
+
+  setVal('fin_vgv', formataMoeda(vgv));
+  setVal('fin_infra', formataMoeda(c_infra));
+  setVal('fin_infra_perc', formataPerc(c_infra / vgv));
+  setVal('fin_corret', formataMoeda(c_corret));
+  setVal('fin_corret_perc', formataPerc(corretagem));
+  setVal('fin_mkt', formataMoeda(c_mkt));
+  setVal('fin_mkt_perc', formataPerc(marketing));
+  setVal('fin_admin', formataMoeda(c_admin));
+  setVal('fin_admin_perc', formataPerc(admin));
+  setVal('fin_cont', formataMoeda(c_cont));
+  setVal('fin_cont_perc', formataPerc(contingencia));
+  setVal('fin_custos_op', formataMoeda(custos_op));
+  setVal('fin_custos_op_perc', formataPerc(custos_op / vgv));
+
+  setVal('fin_impostos', formataMoeda(c_impostos));
+  setVal('fin_impostos_perc', formataPerc(impostos));
+  setVal('fin_custos_total', formataMoeda(custos_total));
+  setVal('fin_custos_total_perc', formataPerc(custos_total / vgv));
+
+  setVal('fin_lucro_bruto', formataMoeda(lucro_bruto));
+  setVal('fin_lucro_bruto_perc', formataPerc(margem_bruta));
+  setVal('fin_lucro_liquido', formataMoeda(lucro_liquido));
+  setVal('fin_lucro_liquido_perc', formataPerc(margem_liquida));
+
+  setVal('fin_net_emp_tab', formataMoeda(net_emp));
+  setVal('fin_net_emp_perc', formataPerc(net_emp / vgv));
+  setVal('fin_net_terr_tab', formataMoeda(net_terr));
+  setVal('fin_net_terr_perc', formataPerc(net_terr / vgv));
+
+  // ────────────────────────────────────────────────────
+  // 4. PAINEL EXECUTIVO — KPIs
+  // ────────────────────────────────────────────────────
+
+  setVal('kpi_vgv', formataMoeda(vgv));
+  setVal('kpi_lotes', formataInt(lotes));
+  setVal('kpi_preco', formataMoeda(preco));
+  setVal('kpi_margem_bruta', formataPerc(margem_bruta));
+  setVal('kpi_margem_liquida', formataPerc(margem_liquida));
+  setVal('kpi_lucro_liquido', formataMoeda(lucro_liquido));
+  setVal('kpi_net_emp', formataMoeda(net_emp));
+  setVal('kpi_perc_emp', (perc_emp * 100).toFixed(0));
+  setVal('kpi_net_terr', formataMoeda(net_terr));
+  setVal('kpi_perc_terr', (perc_terr * 100).toFixed(0));
+  setVal('kpi_infra_total', formataMoeda(infra_total));
+  setVal('kpi_infra_lote', formataMoeda2(infra_lote));
+  setVal('kpi_capital', formataMoeda(capital));
+
+  // ────────────────────────────────────────────────────
+  // 5. CENÁRIOS
+  // ────────────────────────────────────────────────────
+  calcularCenarios();
+
+  // Salvar automaticamente no localStorage
+  salvarDadosAuto();
+}
+
+function calcularCenarios() {
+  const lotes = getVal('p_lotes');
+  const infra_total = getVal('p_infra_total');
+
+  const vgv_base = getVal('p_vgv');
+  const corretagem = getVal('p_corretagem') / 100;
+  const marketing = getVal('p_marketing') / 100;
+  const admin = getVal('p_admin') / 100;
+  const contingencia = getVal('p_contingencia') / 100;
+  const impostos = getVal('p_impostos') / 100;
+  const perc_emp = getVal('p_perc_emp') / 100;
+  const preco_base = getVal('p_preco');
+
+  // MODERADO (base)
+  const mod_preco = preco_base;
+  const mod_vgv = lotes * mod_preco;
+  const mod_custos = infra_total + mod_vgv * (corretagem + marketing + admin + contingencia);
+  const mod_lucro = mod_vgv - mod_custos;
+  const mod_margem = mod_lucro / mod_vgv;
+  const mod_net = mod_lucro * perc_emp - mod_vgv * impostos * perc_emp;
+
+  setVal('cen_mod_preco', formataMoeda(mod_preco));
+  setVal('cen_mod_vgv', formataMoeda(mod_vgv));
+  setVal('cen_mod_custos', formataMoeda(mod_custos));
+  setVal('cen_mod_lucro', formataMoeda(mod_lucro));
+  setVal('cen_mod_margem', formataPerc(mod_margem));
+  setVal('cen_mod_net', formataMoeda(mod_net));
+
+  // PESSIMISTA
+  const pess_preco = getVal('cen_pess_preco');
+  const pess_vgv = lotes * pess_preco;
+  const pess_custos = infra_total + pess_vgv * (corretagem + marketing + admin + contingencia);
+  const pess_lucro = pess_vgv - pess_custos;
+  const pess_margem = pess_lucro / pess_vgv;
+  const pess_net = pess_lucro * perc_emp - pess_vgv * impostos * perc_emp;
+
+  setVal('cen_pess_vgv', formataMoeda(pess_vgv));
+  setVal('cen_pess_custos', formataMoeda(pess_custos));
+  setVal('cen_pess_lucro', formataMoeda(pess_lucro));
+  setVal('cen_pess_margem', formataPerc(pess_margem));
+  setVal('cen_pess_net', formataMoeda(pess_net));
+
+  // OTIMISTA
+  const oti_preco = getVal('cen_oti_preco');
+  const oti_vgv = lotes * oti_preco;
+  const oti_custos = infra_total + oti_vgv * (corretagem + marketing + admin + contingencia);
+  const oti_lucro = oti_vgv - oti_custos;
+  const oti_margem = oti_lucro / oti_vgv;
+  const oti_net = oti_lucro * perc_emp - oti_vgv * impostos * perc_emp;
+
+  setVal('cen_oti_vgv', formataMoeda(oti_vgv));
+  setVal('cen_oti_custos', formataMoeda(oti_custos));
+  setVal('cen_oti_lucro', formataMoeda(oti_lucro));
+  setVal('cen_oti_margem', formataPerc(oti_margem));
+  setVal('cen_oti_net', formataMoeda(oti_net));
+}
+
+// ═══════════════════════════════════════════════════════
+// SISTEMA DE ABAS
+// ═══════════════════════════════════════════════════════
+
+function showTab(tabName, clickedButton) {
+  // Esconder todos os conteúdos
+  const contents = document.querySelectorAll('.tab-content');
+  contents.forEach(c => c.classList.remove('active'));
+
+  // Remover active de todas as tabs
+  const tabs = document.querySelectorAll('.tab');
+  tabs.forEach(t => t.classList.remove('active'));
+
+  // Mostrar conteúdo selecionado
+  const targetContent = document.getElementById(tabName);
+  if (targetContent) {
+    targetContent.classList.add('active');
+  }
+
+  // Ativar tab clicada
+  if (clickedButton) {
+    clickedButton.classList.add('active');
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// SALVAR E CARREGAR DADOS
+// ═══════════════════════════════════════════════════════
+
+function salvarDadosAuto() {
+  const dados = {
+    p_area_ha: getVal('p_area_ha'),
+    p_vias: getVal('p_vias'),
+    p_verdes: getVal('p_verdes'),
+    p_institucional: getVal('p_institucional'),
+    p_tamanho_lote: getVal('p_tamanho_lote'),
+    p_lotes: getVal('p_lotes'),
+    p_perc_emp: getVal('p_perc_emp'),
+    p_preco: getVal('p_preco'),
+    p_corretagem: getVal('p_corretagem'),
+    p_marketing: getVal('p_marketing'),
+    p_admin: getVal('p_admin'),
+    p_contingencia: getVal('p_contingencia'),
+    p_impostos: getVal('p_impostos'),
+    p_capital: getVal('p_capital'),
+    p_taxa_fin: getVal('p_taxa_fin'),
+    p_vista: getVal('p_vista'),
+    p_prazo: getVal('p_prazo'),
+    p_sinal: getVal('p_sinal'),
+    p_infra_total: getVal('p_infra_total'),
+
+    cen_pess_preco: getVal('cen_pess_preco'),
+    cen_oti_preco: getVal('cen_oti_preco'),
+
+    // Infraestrutura - Terraplenagem
+    i_limp_qtd: getVal('i_limp_qtd'),
+    i_limp_unit: getVal('i_limp_unit'),
+    i_corte_qtd: getVal('i_corte_qtd'),
+    i_corte_unit: getVal('i_corte_unit'),
+    i_comp_qtd: getVal('i_comp_qtd'),
+    i_comp_unit: getVal('i_comp_unit'),
+
+    // Pavimentação
+    i_subbase_qtd: getVal('i_subbase_qtd'),
+    i_subbase_unit: getVal('i_subbase_unit'),
+    i_base_qtd: getVal('i_base_qtd'),
+    i_base_unit: getVal('i_base_unit'),
+    i_asfalto_qtd: getVal('i_asfalto_qtd'),
+    i_asfalto_unit: getVal('i_asfalto_unit'),
+    i_meiofio_qtd: getVal('i_meiofio_qtd'),
+    i_meiofio_unit: getVal('i_meiofio_unit'),
+
+    // Drenagem
+    i_dren400_qtd: getVal('i_dren400_qtd'),
+    i_dren400_unit: getVal('i_dren400_unit'),
+    i_dren600_qtd: getVal('i_dren600_qtd'),
+    i_dren600_unit: getVal('i_dren600_unit'),
+    i_bocalobo_qtd: getVal('i_bocalobo_qtd'),
+    i_bocalobo_unit: getVal('i_bocalobo_unit'),
+    i_pv_qtd: getVal('i_pv_qtd'),
+    i_pv_unit: getVal('i_pv_unit'),
+
+    // Água
+    i_agua75_qtd: getVal('i_agua75_qtd'),
+    i_agua75_unit: getVal('i_agua75_unit'),
+    i_agua110_qtd: getVal('i_agua110_qtd'),
+    i_agua110_unit: getVal('i_agua110_unit'),
+    i_hidro_qtd: getVal('i_hidro_qtd'),
+    i_hidro_unit: getVal('i_hidro_unit'),
+    i_reserv_qtd: getVal('i_reserv_qtd'),
+    i_reserv_unit: getVal('i_reserv_unit'),
+
+    // Esgoto
+    i_esg150_qtd: getVal('i_esg150_qtd'),
+    i_esg150_unit: getVal('i_esg150_unit'),
+    i_esg200_qtd: getVal('i_esg200_qtd'),
+    i_esg200_unit: getVal('i_esg200_unit'),
+    i_pvesg_qtd: getVal('i_pvesg_qtd'),
+    i_pvesg_unit: getVal('i_pvesg_unit'),
+    i_ete_qtd: getVal('i_ete_qtd'),
+    i_ete_unit: getVal('i_ete_unit'),
+
+    // Energia
+    i_poste_qtd: getVal('i_poste_qtd'),
+    i_poste_unit: getVal('i_poste_unit'),
+    i_rede_qtd: getVal('i_rede_qtd'),
+    i_rede_unit: getVal('i_rede_unit'),
+    i_transf_qtd: getVal('i_transf_qtd'),
+    i_transf_unit: getVal('i_transf_unit'),
+    i_padrao_qtd: getVal('i_padrao_qtd'),
+    i_padrao_unit: getVal('i_padrao_unit'),
+
+    // Iluminação
+    i_lum_qtd: getVal('i_lum_qtd'),
+    i_lum_unit: getVal('i_lum_unit'),
+    i_quadro_qtd: getVal('i_quadro_qtd'),
+    i_quadro_unit: getVal('i_quadro_unit'),
+
+    // Sinalização
+    i_placas_qtd: getVal('i_placas_qtd'),
+    i_placas_unit: getVal('i_placas_unit'),
+    i_pintura_qtd: getVal('i_pintura_qtd'),
+    i_pintura_unit: getVal('i_pintura_unit'),
+    i_calcada_qtd: getVal('i_calcada_qtd'),
+    i_calcada_unit: getVal('i_calcada_unit'),
+
+    // Projetos
+    i_proj_urb_qtd: getVal('i_proj_urb_qtd'),
+    i_proj_urb_unit: getVal('i_proj_urb_unit'),
+    i_proj_infra_qtd: getVal('i_proj_infra_qtd'),
+    i_proj_infra_unit: getVal('i_proj_infra_unit'),
+    i_lic_qtd: getVal('i_lic_qtd'),
+    i_lic_unit: getVal('i_lic_unit'),
+    i_topo_qtd: getVal('i_topo_qtd'),
+    i_topo_unit: getVal('i_topo_unit'),
+
+    // Diversos
+    i_portaria_qtd: getVal('i_portaria_qtd'),
+    i_portaria_unit: getVal('i_portaria_unit'),
+    i_paisag_qtd: getVal('i_paisag_qtd'),
+    i_paisag_unit: getVal('i_paisag_unit'),
+    i_cerca_qtd: getVal('i_cerca_qtd'),
+    i_cerca_unit: getVal('i_cerca_unit'),
+    i_imprev_qtd: getVal('i_imprev_qtd'),
+    i_imprev_unit: getVal('i_imprev_unit')
+  };
+
+  localStorage.setItem('viabilidade_papagaios', JSON.stringify(dados));
+}
+
+function salvarDados() {
+  salvarDadosAuto();
+  alert('✅ Dados salvos com sucesso no navegador!');
+}
+
+function carregarDados() {
+  const dadosStr = localStorage.getItem('viabilidade_papagaios');
+  if (!dadosStr) {
+    alert('⚠️ Nenhum dado salvo encontrado.');
+    return;
+  }
+
+  const dados = JSON.parse(dadosStr);
+
+  // Carregar todos os valores
+  Object.keys(dados).forEach(key => {
+    const el = document.getElementById(key);
+    if (el) el.value = dados[key];
+  });
+
+  calcularInfra();
+  alert('✅ Dados carregados com sucesso!');
+}
+
+function carregarDadosIniciais() {
+  const dadosStr = localStorage.getItem('viabilidade_papagaios');
+  if (dadosStr) {
+    const dados = JSON.parse(dadosStr);
+    Object.keys(dados).forEach(key => {
+      const el = document.getElementById(key);
+      if (el) el.value = dados[key];
+    });
+  }
+  // Não precisa chamar calcularInfra aqui pois já será chamado na inicialização
+}
+
+// ═══════════════════════════════════════════════════════
+// INICIALIZAR MÁSCARAS EM TODOS OS INPUTS
+// ═══════════════════════════════════════════════════════
+
+function inicializarMascaras() {
+  // Aplicar máscaras iniciais em todos os inputs editáveis
+  const inputsMoeda = ['p_preco', 'p_capital', 'p_infra_total', 'cen_pess_preco', 'cen_oti_preco',
+                       // Infraestrutura - Custos unitários
+                       'i_limp_unit', 'i_corte_unit', 'i_comp_unit',
+                       'i_subbase_unit', 'i_base_unit', 'i_asfalto_unit', 'i_meiofio_unit',
+                       'i_dren400_unit', 'i_dren600_unit', 'i_bocalobo_unit', 'i_pv_unit',
+                       'i_agua75_unit', 'i_agua110_unit', 'i_hidro_unit', 'i_reserv_unit',
+                       'i_esg150_unit', 'i_esg200_unit', 'i_pvesg_unit', 'i_ete_unit',
+                       'i_poste_unit', 'i_rede_unit', 'i_transf_unit', 'i_padrao_unit',
+                       'i_lum_unit', 'i_quadro_unit',
+                       'i_placas_unit', 'i_pintura_unit', 'i_calcada_unit',
+                       'i_proj_urb_unit', 'i_proj_infra_unit', 'i_lic_unit', 'i_topo_unit',
+                       'i_portaria_unit', 'i_paisag_unit', 'i_cerca_unit', 'i_imprev_unit'];
+
+  inputsMoeda.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && !el.readOnly) aplicarMascaraMoeda(el);
+  });
+
+  const inputsDecimal = ['p_vias', 'p_verdes', 'p_institucional', 'p_perc_emp', 'p_corretagem',
+                         'p_marketing', 'p_admin', 'p_contingencia', 'p_impostos',
+                         'p_vista', 'p_taxa_fin', 'p_sinal'];
+
+  inputsDecimal.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && !el.readOnly) aplicarMascaraDecimal(el, 1);
+  });
+
+  const inputsInteiro = ['p_area_ha', 'p_tamanho_lote', 'p_lotes', 'p_prazo',
+                         // Infraestrutura - Quantidades
+                         'i_limp_qtd', 'i_corte_qtd', 'i_comp_qtd',
+                         'i_subbase_qtd', 'i_base_qtd', 'i_asfalto_qtd', 'i_meiofio_qtd',
+                         'i_dren400_qtd', 'i_dren600_qtd', 'i_bocalobo_qtd', 'i_pv_qtd',
+                         'i_agua75_qtd', 'i_agua110_qtd', 'i_hidro_qtd', 'i_reserv_qtd',
+                         'i_esg150_qtd', 'i_esg200_qtd', 'i_pvesg_qtd', 'i_ete_qtd',
+                         'i_poste_qtd', 'i_rede_qtd', 'i_transf_qtd', 'i_padrao_qtd',
+                         'i_lum_qtd', 'i_quadro_qtd',
+                         'i_placas_qtd', 'i_pintura_qtd', 'i_calcada_qtd',
+                         'i_proj_urb_qtd', 'i_proj_infra_qtd', 'i_lic_qtd', 'i_topo_qtd',
+                         'i_portaria_qtd', 'i_paisag_qtd', 'i_cerca_qtd', 'i_imprev_qtd'];
+
+  inputsInteiro.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && !el.readOnly) aplicarMascaraInteiro(el);
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// INICIALIZAÇÃO
+// ═══════════════════════════════════════════════════════
+
+window.addEventListener('DOMContentLoaded', () => {
+  carregarDadosIniciais();
+  setTimeout(() => {
+    inicializarMascaras();
+    calcularInfra(); // Calcular infraestrutura inicialmente
+  }, 100);
+  console.log('✅ Calculadora de Viabilidade carregada com máscaras e detalhamento de infraestrutura!');
+});
+
+</script>
+
+</body>
+</html>
